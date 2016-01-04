@@ -24,6 +24,7 @@ app.use session
 	resave: false
 	saveUninitialized: false
 	secret: Settings.security.sessionSecret
+	proxy: Settings.behindProxy
 	cookie:
 		domain: Settings.cookieDomain
 		maxAge: Settings.cookieSessionLength

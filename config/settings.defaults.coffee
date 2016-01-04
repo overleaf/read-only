@@ -23,5 +23,6 @@ module.exports =
 	cookieName: "sharelatex_read_only.sid"
 	cookieSessionLength: 5 * 24 * 60 * 60 * 1000
 	secureCookie: false
+	behindProxy: false
 	security:
 		sessionSecret: "banana"
