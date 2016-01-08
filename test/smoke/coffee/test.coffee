@@ -2,13 +2,14 @@ child   = require "child_process"
 fs = require "fs"
 Settings = require "settings-sharelatex"
 logger = require "logger-sharelatex"
+expect = require("chai").expect
 
 port = Settings.internal.read_only.port
 
 cookieFilePath = "/tmp/smoke-test-cookie-#{port}.txt"
 
 buildUrl = (path) ->
-	" -b #{cookieFilePath} --resolve 'www#{Settings.cookieDomain}:#{port}:127.0.0.1' http://www#{Settings.cookieDomain}:#{port}/#{path}"
+	" -H 'Expect:' -b #{cookieFilePath} --resolve 'www#{Settings.cookieDomain}:#{port}:127.0.0.1' http://www#{Settings.cookieDomain}:#{port}/#{path}"
 
 # Change cookie to be non secure so curl will send it
 convertCookieFile = (callback) ->
@@ -25,19 +26,30 @@ convertCookieFile = (callback) ->
 describe "Log in and download project", ->
 	it "should log in and download a project", (done) ->
 		command =  """
-			curl -H  "X-Forwarded-Proto: https" -c #{cookieFilePath} --form email="#{Settings.smokeTest.email}" --form password="#{Settings.smokeTest.password}" #{buildUrl('login')}
+			curl -H "X-Forwarded-Proto: https" -c #{cookieFilePath} --data "email=#{encodeURIComponent(Settings.smokeTest.email)}&password=#{encodeURIComponent(Settings.smokeTest.password)}" #{buildUrl('login')}
 		"""
 		console.log "COMMAND", command
 		child.exec command, (err, stdout, stderr)->
 			return done(err) if err?
 			console.log "LOGIN STDOUT", stdout
 			console.log "LOGIN STDERR", stderr
+			
+			expect(!!stdout.match("Found. Redirecting to /project"), "Should redirect").to.equal true
+
 			command =  """
-				curl -H "X-Forwarded-Proto: https" -v #{buildUrl("project/#{Settings.smokeTest.projectId}")}
+				curl -H "X-Forwarded-Proto: https" #{buildUrl("project/#{Settings.smokeTest.projectId}")} > /tmp/#{Settings.smokeTest.projectId}.zip
 			"""
 			console.log "COMMAND", command
-			child.exec command, (error, stdout, stderr)->
-				return done(err) if err?
-				console.log "DOWNLOAD STDOUT", stdout
-				console.log "DOWNLOAD STDERR", stderr
-				done()
+			convertCookieFile (error) ->
+				return done(error) if error?
+				child.exec command, (error, stdout, stderr)->
+					return done(err) if err?
+					console.log "DOWNLOAD STDOUT", stdout
+					console.log "DOWNLOAD STDERR", stderr
+					command = """
+						unzip /tmp/#{Settings.smokeTest.projectId}.zip -d /tmp/#{Settings.smokeTest.projectId}
+					"""
+					child.exec command, (err, stdout, stderr) ->
+						return done(err) if err?
+						expect(!!stdout.match("inflating: /tmp/#{Settings.smokeTest.projectId}/main.tex"), "Should unzip").to.equal true
+						child.exec "rm -r /tmp/#{Settings.smokeTest.projectId} /tmp/#{Settings.smokeTest.projectId}.zip", done
