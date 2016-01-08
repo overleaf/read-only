@@ -17,6 +17,7 @@
     "request": "^2.34.0",
     "settings-sharelatex": "git+https://github.com/sharelatex/settings-sharelatex.git#v1.0.0",
     "redis-sharelatex": "git+https://github.com/sharelatex/redis-sharelatex.git#master",
+    "smoke-test-sharelatex": "git+https://github.com/sharelatex/smoke-test-sharelatex.git#master",
     "underscore": "~1.6.0"
   },
   "devDependencies": {

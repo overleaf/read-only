@@ -25,17 +25,17 @@ module.exports = (grunt) ->
 				dest: "test/unit/js/"
 				ext:  ".js"
 
-			acceptance_tests:
+			smoke_tests:
 				expand: true
-				cwd:  "test/acceptance/coffee"
+				cwd:  "test/smoke/coffee"
 				src: ["**/*.coffee"]
-				dest: "test/acceptance/js/"
+				dest: "test/smoke/js/"
 				ext:  ".js"
 
 		clean:
 			app: ["app/js/"]
 			unit_tests: ["test/unit/js"]
-			acceptance_tests: ["test/acceptance/js"]
+			smoke_tests: ["test/smoke/js"]
 
 		execute:
 			app:
@@ -47,12 +47,6 @@ module.exports = (grunt) ->
 					reporter: grunt.option('reporter') or 'spec'
 					grep: grunt.option("grep")
 				src: ["test/unit/js/**/*.js"]
-			acceptance:
-				options:
-					reporter: grunt.option('reporter') or 'spec'
-					timeout: 40000
-					grep: grunt.option("grep")
-				src: ["test/acceptance/js/**/*.js"]
 
 	grunt.loadNpmTasks 'grunt-contrib-coffee'
 	grunt.loadNpmTasks 'grunt-contrib-clean'
@@ -62,14 +56,13 @@ module.exports = (grunt) ->
 	grunt.loadNpmTasks 'grunt-bunyan'
 	grunt.loadNpmTasks 'grunt-forever'
 
-	grunt.registerTask 'compile:app', ['clean:app', 'coffee:app', 'coffee:app_src']
+	grunt.registerTask 'compile:app', ['clean:app', 'coffee:app', 'coffee:app_src', 'compile:smoke_tests']
 	grunt.registerTask 'run',         ['compile:app', 'bunyan', 'execute']
 
 	grunt.registerTask 'compile:unit_tests', ['clean:unit_tests', 'coffee:unit_tests']
 	grunt.registerTask 'test:unit',          ['compile:app', 'compile:unit_tests', 'mochaTest:unit']
 
-	grunt.registerTask 'compile:acceptance_tests', ['clean:acceptance_tests', 'coffee:acceptance_tests']
-	grunt.registerTask 'test:acceptance',          ['compile:acceptance_tests', 'mochaTest:acceptance']
+	grunt.registerTask 'compile:smoke_tests', ['clean:smoke_tests', 'coffee:smoke_tests']
 
 	grunt.registerTask 'install', 'compile:app'
 

@@ -40,6 +40,9 @@ app.get "/project/:project_id", HttpController.getProject
 app.get '/status', (req, res)->
 	res.send('read-only is alive')
 
+smokeTest = require "smoke-test-sharelatex"
+app.get '/health_check', smokeTest.run "./test/smoke/js/test.js"
+
 port = Settings.internal.read_only.port
 host = Settings.internal.read_only.host
 app.listen port, host, (error) ->
