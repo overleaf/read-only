@@ -25,32 +25,32 @@ convertCookieFile = (callback) ->
 
 describe "Log in and download project", ->
 	it "should log in and download a project", (done) ->
-		logger.log "starting smoke test"
+		test_id = Math.floor(Math.random() * 100000).toString(16)
+		logger.log {test_id}, "starting smoke test"
 		command =  """
 			curl -H "X-Forwarded-Proto: https" -c #{cookieFilePath} --data "email=#{encodeURIComponent(Settings.smokeTest.email)}&password=#{encodeURIComponent(Settings.smokeTest.password)}" #{buildUrl('login')}
 		"""
-		logger.log {command}, "running curl"
+		logger.log {command}, "running login curl"
 		child.exec command, (err, stdout, stderr)->
 			return done(err) if err?
-			console.log "LOGIN STDOUT", stdout
-			console.log "LOGIN STDERR", stderr
+			logger.log {stdout, stderr}, "got login curl response"
 			
 			expect(!!stdout.match("Found. Redirecting to /project"), "Should redirect").to.equal true
 
 			command =  """
 				curl -H "X-Forwarded-Proto: https" #{buildUrl("project/#{Settings.smokeTest.projectId}")} > /tmp/#{Settings.smokeTest.projectId}.zip
 			"""
-			logger.log {command}, "running curl"
+			logger.log {command}, "running download curl"
 			convertCookieFile (error) ->
 				return done(error) if error?
 				child.exec command, (error, stdout, stderr)->
 					return done(err) if err?
-					logger.log {stdout, stderr}, "got curl response"
+					logger.log {stdout, stderr}, "got download curl response"
 					command = """
 						unzip /tmp/#{Settings.smokeTest.projectId}.zip -d /tmp/#{Settings.smokeTest.projectId}
 					"""
 					child.exec command, (err, stdout, stderr) ->
 						return done(err) if err?
 						expect(!!stdout.match("inflating: /tmp/#{Settings.smokeTest.projectId}/main.tex"), "Should unzip").to.equal true
-						logger.log "successfully ran smoke test"
+						logger.log {test_id}, "successfully ran smoke test"
 						child.exec "rm -r /tmp/#{Settings.smokeTest.projectId} /tmp/#{Settings.smokeTest.projectId}.zip", done
