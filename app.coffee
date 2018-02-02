@@ -38,6 +38,7 @@ app.get "/project", HttpController.projects
 app.get "/project/:project_id", HttpController.getProject
 
 app.get '/status', (req, res)->
+	logger.log "hit status"
 	res.send('read-only is alive')
 
 smokeTest = require "smoke-test-sharelatex"

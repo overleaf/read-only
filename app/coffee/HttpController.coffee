@@ -58,7 +58,7 @@ module.exports = HttpController =
 	getProject: (req, res, next) ->
 		logger.log {project_id}, "downloading project"
 		if !req.session.user_id?
-			logger.err {project_id}, "no user, not downloading project"
+			logger.err {project_id}, "no user in session, not downloading project"
 			res.status(403).end()
 			return
 
@@ -79,7 +79,9 @@ module.exports = HttpController =
 				res.status(403).end()
 				return
 			else
-				upstream = request.get { url: "#{Settings.apis.project_archiver.url}/project/#{project._id}/zip" }
+				url = "#{Settings.apis.project_archiver.url}/project/#{project._id}/zip"
+				logger.log {project_id, url}, "proxying request to project archiver"
+				upstream = request.get { url: url }
 				upstream.pause()
 				res.header("Content-Disposition", "attachment; filename=#{project.name}.zip")
 				upstream.on "error", (error) -> next(error)
