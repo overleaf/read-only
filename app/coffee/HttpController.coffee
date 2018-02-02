@@ -56,7 +56,9 @@ module.exports = HttpController =
 			res.render "projects", projects: projects
 	
 	getProject: (req, res, next) ->
+		logger.log {project_id}, "downloading project"
 		if !req.session.user_id?
+			logger.err {project_id}, "no user, not downloading project"
 			res.status(403).end()
 			return
 
@@ -65,7 +67,6 @@ module.exports = HttpController =
 		catch error
 			return next(error)
 			
-		logger.log {project_id}, "downloading project"
 
 		db.projects.findOne {_id: project_id}, (error, project) ->
 			return next(error) if error?
