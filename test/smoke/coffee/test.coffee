@@ -27,31 +27,37 @@ describe "Log in and download project", ->
 	it "should log in and download a project", (done) ->
 		test_id = Math.floor(Math.random() * 100000).toString(16)
 		start = new Date()
-		logger.log {test_id}, "starting smoke test"
+		logger.log {test_id}, "tests: starting smoke test"
 		command =  """
 			curl -H "X-Forwarded-Proto: https" -c #{cookieFilePath} --data "email=#{encodeURIComponent(Settings.smokeTest.email)}&password=#{encodeURIComponent(Settings.smokeTest.password)}" #{buildUrl('login')}
 		"""
 		logger.log {command, test_id}, "running login curl"
 		child.exec command, (err, stdout, stderr)->
 			return done(err) if err?
-			logger.log {stdout, stderr, test_id}, "got login curl response"
+			logger.log {stdout, stderr, test_id}, "tests:  got login curl response"
 			
 			expect(!!stdout.match("Found. Redirecting to /project"), "Should redirect").to.equal true
 
 			command =  """
 				curl -H "X-Forwarded-Proto: https" #{buildUrl("project/#{Settings.smokeTest.projectId}")} > /tmp/#{Settings.smokeTest.projectId}.zip
 			"""
-			logger.log {command, test_id}, "running download curl"
+			logger.log {command, test_id}, "tests: running download curl"
 			convertCookieFile (error) ->
-				return done(error) if error?
+				if error?
+					logger.err error:error, "tests: error convreing cookiefile"
+					return done(error) 
 				child.exec command, (error, stdout, stderr)->
-					return done(err) if err?
-					logger.log {stdout, stderr, test_id}, "got download curl response"
+					if err?
+						logger.err err:error, stderr:stderr, "tests: error execing command"
+						return done(err) 
+					logger.log {stdout, stderr, test_id}, "tests: got download curl response"
 					command = """
 						unzip /tmp/#{Settings.smokeTest.projectId}.zip -d /tmp/#{Settings.smokeTest.projectId}
 					"""
 					child.exec command, (err, stdout, stderr) ->
-						return done(err) if err?
+						if err?
+							logger.err err:err, "tests: error trying to unzip"
+							return done(err)
 						expect(!!stdout.match("inflating: /tmp/#{Settings.smokeTest.projectId}/main.tex"), "Should unzip").to.equal true
-						logger.log {test_id, time_taken: new Date() - start}, "successfully ran smoke test"
+						logger.log {test_id, time_taken: new Date() - start}, "tests: successfully ran smoke test"
 						child.exec "rm -r /tmp/#{Settings.smokeTest.projectId} /tmp/#{Settings.smokeTest.projectId}.zip", done
