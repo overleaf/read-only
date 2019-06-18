@@ -1,0 +1,8 @@
+read-only
+--language=coffeescript
+--node-version=8.11.1
+--acceptance-creds=None
+--dependencies=redis,mongo
+--docker-repos=gcr.io/overleaf-ops
+--build-target=docker
+--script-version=1.1.21
