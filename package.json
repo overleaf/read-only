@@ -37,6 +37,7 @@
   "devDependencies": {
     "bunyan": "~0.22.3",
     "chai": "~1.9.1",
+    "nodemon": "^1.19.1",
     "sandboxed-module": "~0.3.0",
     "sinon": "~1.5.2",
     "timekeeper": "0.0.5"
