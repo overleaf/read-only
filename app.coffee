@@ -14,7 +14,7 @@ logger.initialize("read-only")
 app = express()
 app.use(express.static('public'))
 app.set('views', __dirname + '/app/views')
-app.set('view engine', 'jade')
+app.set('view engine', 'pug')
 
 session = require("express-session")
 RedisStore = require('connect-redis')(session)
