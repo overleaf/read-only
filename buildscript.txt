@@ -1,6 +1,6 @@
 read-only
 --language=coffeescript
---node-version=8.11.1
+--node-version=10.16.0
 --acceptance-creds=None
 --dependencies=redis,mongo
 --docker-repos=gcr.io/overleaf-ops

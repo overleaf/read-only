@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "async": "~0.8.0",
-    "bcrypt": "^0.8.5",
+    "bcrypt": "^3.0.6",
     "body-parser": "~1.0.2",
     "coffeescript": "^1.12.7",
     "connect-redis": "^3.0.1",
