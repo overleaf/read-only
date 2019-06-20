@@ -2,7 +2,7 @@ http = require('http')
 http.globalAgent.maxSockets = 300
 
 MONGO_HOST = process.env['MONGO_HOST'] or "localhost"
-PROJECT_HISTORY_HOST = process.env['PROJECT_HISTORY_HOST'] or "localhost"
+PROJECT_ARCHIVER_HOST = process.env['PROJECT_ARCHIVER_HOST'] or "localhost"
 
 module.exports =
 	internal:
@@ -12,7 +12,7 @@ module.exports =
 
 	apis:
 		project_archiver:
-			url: "http://#{PROJECT_HISTORY_HOST}:3020"
+			url: "http://#{PROJECT_ARCHIVER_HOST}:3020"
 
 	mongo:
 		url: "mongodb://#{MONGO_HOST}/sharelatex"
