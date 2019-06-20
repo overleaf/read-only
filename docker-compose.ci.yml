@@ -26,7 +26,6 @@ services:
       NODE_ENV: test
     depends_on:
       - mongo
-      - redis
     user: node
     command: npm run test:acceptance:_run
 
@@ -39,9 +38,6 @@ services:
       - ./:/tmp/build/
     command: tar -czf /tmp/build/build.tar.gz --exclude=build.tar.gz --exclude-vcs .
     user: root
-
-  redis:
-    image: redis
 
   mongo:
     image: mongo:3.4
