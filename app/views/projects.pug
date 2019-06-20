@@ -11,10 +11,10 @@ block content
 							strong Your Projects
 						each project in projects
 							li(style="padding: 6px")
-								a.btn.btn-info(href="/project/#{project._id}", style="color: white").pull-right Download
-								a(href="/project/#{project._id}")= project.name
+								a.btn.btn-info(href=`/project/${project._id}`, style="color: white").pull-right Download
+								a(href=`/project/${project._id}`)= project.name
 								br
 								span.small.subdued
-									| Last updated: 
+									| Last updated:
 									= project.lastUpdated.toString().match(/^(.*) \d\d:\d\d:\d\d/)[1]
 		.row-spaced
