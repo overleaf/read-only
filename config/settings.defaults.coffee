@@ -15,13 +15,7 @@ module.exports =
 			url: "http://#{PROJECT_ARCHIVER_HOST}:3020"
 
 	mongo:
-		url: "mongodb://#{MONGO_HOST}/sharelatex"
-
-	redis:
-		web:
-			host: process.env['REDIS_HOST'] or "localhost"
-			port: process.env['REDIS_PORT'] or "6379"
-			password: process.env['REDIS_PASSWORD']
+		url: "mongodb://#{MONGO_HOST}/read_only"
 
 	cookieName: "sharelatex_read_only.sid"
 	cookieSessionLength: 5 * 24 * 60 * 60 * 1000

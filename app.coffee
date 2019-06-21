@@ -2,11 +2,11 @@ Settings   = require "settings-sharelatex"
 logger     = require "logger-sharelatex"
 express    = require "express"
 bodyParser = require "body-parser"
-HttpController = require "./app/js/HttpController"
 Metrics    = require "metrics-sharelatex"
 Path       = require "path"
-redis = require("redis-sharelatex")
-rclient = redis.createClient(Settings.redis.web)
+
+HttpController = require "./app/js/HttpController"
+SessionMiddleware = require "./app/js/SessionMiddleware"
 
 Metrics.initialize("read-only")
 logger.initialize("read-only")
@@ -16,21 +16,7 @@ app.use(express.static('public'))
 app.set('views', __dirname + '/app/views')
 app.set('view engine', 'pug')
 
-session = require("express-session")
-RedisStore = require('connect-redis')(session)
-sessionStore = new RedisStore(client:rclient)
-
-app.use session
-	resave: false
-	saveUninitialized: false
-	secret: Settings.security.sessionSecret
-	proxy: Settings.behindProxy
-	cookie:
-		domain: Settings.cookieDomain
-		maxAge: Settings.cookieSessionLength
-		secure: Settings.secureCookie
-	store: sessionStore
-	key: Settings.cookieName
+app.use(SessionMiddleware.middleware)
 
 app.get '/', HttpController.home
 app.post "/login", bodyParser.urlencoded(), HttpController.login
