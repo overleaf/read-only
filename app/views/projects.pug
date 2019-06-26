@@ -7,14 +7,21 @@ block content
 			.col-md-10.col-md-offset-1
 				.card
 					ul.structured-list.list-unstyled
-						li(style="padding: 6px")
+						li
 							strong Your Projects
 						each project in projects
-							li(style="padding: 6px")
-								a.btn.btn-info(href=`/project/${project._id}`, style="color: white").pull-right Download
-								a(href=`/project/${project._id}`)= project.name
-								br
-								span.small.subdued
-									| Last updated:
-									= project.lastUpdated.toString().match(/^(.*) \d\d:\d\d:\d\d/)[1]
+							hr.thin
+							li.row
+								.col-xs-10
+									div(
+										style="overflow: hidden; text-overflow: ellipsis;"
+									)
+										a(
+											href=`/project/${project._id}`										
+										)= project.name								
+									span.small.subdued
+										| Last updated:
+										= project.lastUpdated.toString().match(/^(.*) \d\d:\d\d:\d\d/)[1]
+								.col-xs-2
+									a.btn.btn-primary(href=`/project/${project._id}`).pull-right Download
 		.row-spaced
