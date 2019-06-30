@@ -15,12 +15,12 @@ buildUrl = (path) ->
 convertCookieFile = (callback) ->
 	fs = require("fs")
 	fs.readFile cookieFilePath, "utf8", (err, data) ->
-		return callback(err) if err
+		return callback(err) if err?
 		firstTrue = data.indexOf("TRUE")
 		secondTrue = data.indexOf("TRUE", firstTrue+4)
 		result = data.slice(0, secondTrue)+"FALSE"+data.slice(secondTrue+4)
 		fs.writeFile cookieFilePath, result, "utf8", (err) ->
-			return callback(err) if err
+			return callback(err) if err?
 			callback()
 
 describe "Log in and download project", ->
