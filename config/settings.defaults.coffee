@@ -23,25 +23,14 @@ emailTransportParams = switch process.env['EMAIL_TRANSPORT']
 	else {}
 
 module.exports =
-	internal:
-		read_only:
-			host: process.env['LISTEN_ADDRESS'] or "localhost"
-			port: HOST_LISTEN_PORT
+	behindProxy: yn(process.env['BEHIND_PROXY'], { default: false })
+	cookieDomain: process.env['COOKIE_DOMAIN']
+	cookieName: "overleaf_read_only.sid"
+	secureCookie: yn(process.env['SECURE_COOKIE'], { default: false })
 
 	apis:
 		project_archiver:
 			url: "http://#{PROJECT_ARCHIVER_HOST}:3020"
-
-	mongo:
-		url: MONGO_URL
-
-	cookieName: "overleaf_read_only.sid"
-	cookieDomain: process.env['COOKIE_DOMAIN']
-	secureCookie: yn(process.env['SECURE_COOKIE'], { default: false })
-	behindProxy: yn(process.env['BEHIND_PROXY'], { default: false })
-
-	security:
-		sessionSecret: process.env['SESSION_SECRET'] or "not-so-secret"
 
 	email:
 		fromAddress: "Overleaf <welcome@overleaf.com>"
@@ -49,4 +38,20 @@ module.exports =
 		transport: process.env['EMAIL_TRANSPORT']
 		parameters: emailTransportParams
 
+	internal:
+		read_only:
+			host: process.env['LISTEN_ADDRESS'] or "localhost"
+			port: HOST_LISTEN_PORT
+
+	mongo:
+		url: MONGO_URL
+
+	security:
+		sessionSecret: process.env['SESSION_SECRET'] or "not-so-secret"
+
 	siteUrl: process.env['PUBLIC_URL'] or "http://localhost:#{HOST_LISTEN_PORT}"
+
+	smokeTest:
+		email: process.env['SMOKE_TEST_EMAIL']
+		password: process.env['SMOKE_TEST_PASSWORD']
+		projectId: process.env['SMOKE_TEST_PROJECT_ID']
