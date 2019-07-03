@@ -1,4 +1,6 @@
 http = require('http')
+yn = require('yn')
+
 http.globalAgent.maxSockets = 300
 
 MONGO_HOST = process.env['MONGO_HOST'] or "localhost"
@@ -33,16 +35,18 @@ module.exports =
 	mongo:
 		url: MONGO_URL
 
-	cookieName: "sharelatex_read_only.sid"
-	cookieSessionLength: 5 * 24 * 60 * 60 * 1000
-	secureCookie: false
-	behindProxy: false
+	cookieName: "overleaf_read_only.sid"
+	cookieDomain: process.env['COOKIE_DOMAIN']
+	secureCookie: yn(process.env['SECURE_COOKIE'], { default: false })
+	behindProxy: yn(process.env['BEHIND_PROXY'], { default: false })
+
 	security:
-		sessionSecret: "banana"
+		sessionSecret: process.env['SESSION_SECRET'] or "not-so-secret"
 
 	email:
 		fromAddress: "Overleaf <welcome@overleaf.com>"
 		replyToAddress: "welcome@overleaf.com"
 		transport: process.env['EMAIL_TRANSPORT']
 		parameters: emailTransportParams
+
 	siteUrl: process.env['PUBLIC_URL'] or "http://localhost:#{HOST_LISTEN_PORT}"
