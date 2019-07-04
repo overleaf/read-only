@@ -17,28 +17,36 @@
     "nodemon": "nodemon --config nodemon.json"
   },
   "dependencies": {
-    "async": "~0.8.0",
+    "async": "^3.1.0",
     "bcrypt": "^3.0.6",
     "body-parser": "^1.19.0",
+    "celebrate": "^10.0.1",
     "coffeescript": "^1.12.7",
     "connect-mongo": "^3.0.0",
     "express": "^4.17.1",
     "express-session": "^1.12.1",
+    "lodash": "^4.17.11",
     "logger-sharelatex": "git+https://github.com/sharelatex/logger-sharelatex.git#v1.1.0",
+    "marked": "^0.6.2",
     "metrics-sharelatex": "git+https://github.com/sharelatex/metrics-sharelatex.git#v1.1.0",
     "mongojs": "2.4.0",
+    "nodemailer": "^6.2.1",
+    "nodemailer-sendgrid-transport": "^0.2.0",
     "pug": "^2.0.4",
     "request": "^2.88.0",
     "settings-sharelatex": "git+https://github.com/sharelatex/settings-sharelatex.git#v1.0.0",
-    "smoke-test-sharelatex": "git+https://github.com/sharelatex/smoke-test-sharelatex.git#master",
-    "underscore": "~1.6.0"
+    "smoke-test-sharelatex": "git+https://github.com/sharelatex/smoke-test-sharelatex.git#master"
   },
   "devDependencies": {
     "bunyan": "~0.22.3",
-    "chai": "~1.9.1",
+    "chai": "^4.2.0",
+    "jsdom": "^15.1.1",
+    "maildev": "^1.0.0",
+    "mocha": "^6.1.4",
     "nodemon": "^1.19.1",
-    "sandboxed-module": "~0.3.0",
-    "sinon": "~1.5.2",
+    "sandboxed-module": "^2.0.3",
+    "sinon": "^7.3.2",
+    "sinon-chai": "^3.3.0",
     "timekeeper": "0.0.5"
   }
 }

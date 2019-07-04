@@ -7,8 +7,14 @@ block content
 			.col-md-6.col-md-offset-3
 				.card
 					form(action="/login", method="POST")
-						if failedLogIn
+						if failedLogin
 							.alert.alert-danger Your email or password was incorrect
+						if failedOneTimeLogin
+							.alert.alert-danger
+								| Your login link has expired. Please
+								|
+								a(href="/one-time-login/request") request another one
+								| .
 						.form-group
 							label(for='email') Email
 							input.form-control(
@@ -27,8 +33,7 @@ block content
 								placeholder='********'
 							)
 						.actions
-							button.btn-primary.btn(
-								type='submit'
-							) Log in
-
-						
+							a.btn.btn-link.pull-right(href="/one-time-login/request")
+								| Forgot your password or don't have one?
+							button.btn-primary.btn(type='submit')
+								| Log in

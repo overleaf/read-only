@@ -2,9 +2,12 @@ Settings = require("settings-sharelatex")
 session = require("express-session")
 MongoStore = require('connect-mongo')(session)
 
+SESSION_TTL_SECS = 60 * 60   # 1 hour
+
 sessionStore = new MongoStore({
 	url: Settings.mongo.url
 	collection: "sessions"
+	ttl: SESSION_TTL_SECS
 })
 
 middleware = session({

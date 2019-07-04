@@ -1,6 +1,5 @@
 logger = require "logger-sharelatex"
-{db, ObjectId} = require "./mongojs"
-bcrypt = require "bcrypt"
+{db, ObjectId} = require "./MongoHandler"
 request = require "request"
 Settings = require "settings-sharelatex"
 
@@ -10,30 +9,7 @@ module.exports = HttpController =
 			res.redirect "/project"
 		else
 			res.render "home"
-	
-	login: (req, res, next) ->
-		{email, password} = req.body
-		logger.log {email}, "received login request"
-		email = email.trim().toLowerCase()
-		db.users.findOne {email: email}, (error, user) ->
-			return next(error) if error?
-			if !user?
-				logger.log {email}, "no user found"
-				res.render "home", failedLogIn: true
-				return
-			else
-				bcrypt.compare password, user.hashedPassword, (error, match) ->
-					return next(error) if error?
-					if !match
-						logger.log {email}, "incorrect password"
-						res.render "home", failedLogIn: true
-						return
-					else
-						user_id = user._id.toString()
-						logger.log {email, user_id}, "successful login"
-						req.session.user_id = user_id
-						res.redirect "/project"
-	
+
 	projects: (req, res, next) ->
 		if !req.session.user_id?
 			res.redirect "/"
@@ -42,7 +18,7 @@ module.exports = HttpController =
 			user_id = ObjectId(req.session.user_id)
 		catch error
 			return next(error)
-		
+
 		logger.log {user_id: user_id.toString()}, "showing project page"
 		db.projects.find {owner_ref: user_id}, (error, projects) ->
 			return next(error) if error?
@@ -54,7 +30,7 @@ module.exports = HttpController =
 				else
 					return 0
 			res.render "projects", projects: projects
-	
+
 	getProject: (req, res, next) ->
 		logger.log {project_id}, "downloading project"
 		if !req.session.user_id?
@@ -66,7 +42,6 @@ module.exports = HttpController =
 			project_id = ObjectId(req.params.project_id)
 		catch error
 			return next(error)
-			
 
 		db.projects.findOne {_id: project_id}, (error, project) ->
 			return next(error) if error?
