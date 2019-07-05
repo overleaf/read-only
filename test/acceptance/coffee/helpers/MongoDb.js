@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 /*
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
@@ -63,7 +65,7 @@ module.exports = {
 					return cb(null, []);
 				}
 				const projects = [];
-				for (let i = 0, end = numProjects, asc = 0 <= end; asc ? i < end : i > end; asc ? i++ : i--) {
+				for (let i = 0, end = numProjects, asc = end >= 0; asc ? i < end : i > end; asc ? i++ : i--) {
 					projects.push({
 						name: `Project ${i + 1}`,
 						owner_ref: user._id,
