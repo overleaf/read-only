@@ -1,34 +1,54 @@
-MailDev = require('maildev')
-logger = require('logger-sharelatex')
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS205: Consider reworking code to avoid use of IIFEs
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+const MailDev = require('maildev');
+const logger = require('logger-sharelatex');
 
 module.exports = {
-	running: false
-	initing: false
-	startCallbacks: []
-	emailCallbacks: []
-	maildev: new MailDev()
+	running: false,
+	initing: false,
+	startCallbacks: [],
+	emailCallbacks: [],
+	maildev: new MailDev(),
 
-	ensureRunning: (callback) ->
-		if @running
-			return callback()
-		if @initing
-			@startCallbacks.push(callback)
-			return
-		@initing = true
-		@startCallbacks.push(callback)
-		@maildev.listen (err) =>
-			if !err
-				@running = true
-				@maildev.on('new', (email) => @handleNewEmail(email))
-				logger.info("Mock email server ready")
-			for callback in @startCallbacks
-				callback(err)
+	ensureRunning(callback) {
+		if (this.running) {
+			return callback();
+		}
+		if (this.initing) {
+			this.startCallbacks.push(callback);
+			return;
+		}
+		this.initing = true;
+		this.startCallbacks.push(callback);
+		return this.maildev.listen(err => {
+			if (!err) {
+				this.running = true;
+				this.maildev.on('new', email => this.handleNewEmail(email));
+				logger.info("Mock email server ready");
+			}
+			return (() => {
+				const result = [];
+				for (callback of Array.from(this.startCallbacks)) {
+					result.push(callback(err));
+				}
+				return result;
+			})();
+		});
+	},
 
-	waitForEmail: (callback) ->
-		@emailCallbacks.push(callback)
+	waitForEmail(callback) {
+		return this.emailCallbacks.push(callback);
+	},
 
-	handleNewEmail: (email) ->
-		for callback in @emailCallbacks
-			callback(null, email)
-		@emailCallbacks = []
-}
+	handleNewEmail(email) {
+		for (let callback of Array.from(this.emailCallbacks)) {
+			callback(null, email);
+		}
+		return this.emailCallbacks = [];
+	}
+};
