@@ -61,4 +61,4 @@ module.exports = Router =
 			logger.log "hit status"
 			res.send('read-only is alive')
 
-		app.get '/health_check', SmokeTest.run(__dirname + "/test/smoke/js/test.js", 30000)
+		app.get '/health_check', SmokeTest.run(__dirname + "../../../test/smoke/js/test.js", 30000)

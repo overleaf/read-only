@@ -17,7 +17,6 @@ middleware = session({
 	proxy: Settings.behindProxy
 	cookie:
 		domain: Settings.cookieDomain
-		maxAge: Settings.cookieSessionLength
 		secure: Settings.secureCookie
 	store: sessionStore
 	key: Settings.cookieName

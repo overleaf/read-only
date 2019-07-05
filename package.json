@@ -35,7 +35,8 @@
     "pug": "^2.0.4",
     "request": "^2.88.0",
     "settings-sharelatex": "git+https://github.com/sharelatex/settings-sharelatex.git#v1.0.0",
-    "smoke-test-sharelatex": "git+https://github.com/sharelatex/smoke-test-sharelatex.git#master"
+    "smoke-test-sharelatex": "git+https://github.com/sharelatex/smoke-test-sharelatex.git#master",
+    "yn": "^3.1.0"
   },
   "devDependencies": {
     "bunyan": "~0.22.3",
