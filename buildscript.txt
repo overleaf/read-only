@@ -1,5 +1,5 @@
 read-only
---language=coffeescript
+--language=es
 --node-version=10.16.0
 --acceptance-creds=None
 --dependencies=mongo
