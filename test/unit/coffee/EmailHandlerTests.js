@@ -1,44 +1,58 @@
-path = require('path')
-sinon = require('sinon')
-{ expect } = require('chai')
-SandboxedModule = require('sandboxed-module')
-{ ObjectId } = require('mongojs')
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+const path = require('path');
+const sinon = require('sinon');
+const { expect } = require('chai');
+const SandboxedModule = require('sandboxed-module');
+const { ObjectId } = require('mongojs');
 
-MODULE_PATH = path.join(__dirname, '../../../app/js/EmailHandler.js')
+const MODULE_PATH = path.join(__dirname, '../../../app/js/EmailHandler.js');
 
-describe 'EmailHandler', ->
-	beforeEach ->
-		@Settings = {
-			email:
-				fromAddress: "Overleaf team <welcome@overleaf.com>"
+describe('EmailHandler', function() {
+	beforeEach(function() {
+		this.Settings = {
+			email: {
+				fromAddress: "Overleaf team <welcome@overleaf.com>",
 				replyToAddress: "welcome@overleaf.com"
-		}
-		@logger = {
+			}
+		};
+		this.logger = {
 			info: sinon.stub()
-		}
-		@EmailSender = {
+		};
+		this.EmailSender = {
 			sendMail: sinon.stub().yields()
-		}
-		@EmailHandler = SandboxedModule.require(MODULE_PATH, {
-			requires:
-				'settings-sharelatex': @Settings
-				'logger-sharelatex': @logger
-				'./EmailSender': @EmailSender
-		})
+		};
+		return this.EmailHandler = SandboxedModule.require(MODULE_PATH, {
+			requires: {
+				'settings-sharelatex': this.Settings,
+				'logger-sharelatex': this.logger,
+				'./EmailSender': this.EmailSender
+			}
+		});
+	});
 
-	describe "sendOneTimeLoginEmail", ->
-		it "builds and sends an email", (done) ->
-			email = "user@example.com"
-			token = "secret123"
-			@EmailHandler.sendOneTimeLoginEmail email, token, (err) =>
-				if err?
-					return done(err)
-				expect(@EmailSender.sendMail).to.have.been.calledWith({
-					to: email
-					from: @Settings.email.fromAddress
-					replyTo: @Settings.email.replyToAddress
-					subject: "Overleaf Read Only Access"
-					text: sinon.match(/secret123/)
+	return describe("sendOneTimeLoginEmail", () =>
+		it("builds and sends an email", function(done) {
+			const email = "user@example.com";
+			const token = "secret123";
+			return this.EmailHandler.sendOneTimeLoginEmail(email, token, err => {
+				if (err != null) {
+					return done(err);
+				}
+				expect(this.EmailSender.sendMail).to.have.been.calledWith({
+					to: email,
+					from: this.Settings.email.fromAddress,
+					replyTo: this.Settings.email.replyToAddress,
+					subject: "Overleaf Read Only Access",
+					text: sinon.match(/secret123/),
 					html: sinon.match(/secret123/)
-				})
-				done()
+				});
+				return done();
+			});
+		})
+	);
+});

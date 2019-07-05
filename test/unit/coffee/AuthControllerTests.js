@@ -1,126 +1,155 @@
-path = require('path')
-sinon = require('sinon')
-{ expect } = require('chai')
-SandboxedModule = require('sandboxed-module')
-Errors = require("../../../app/js/Errors")
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+const path = require('path');
+const sinon = require('sinon');
+const { expect } = require('chai');
+const SandboxedModule = require('sandboxed-module');
+const Errors = require("../../../app/js/Errors");
 
-MODULE_PATH = path.join(__dirname, '../../../app/js/AuthController.js')
+const MODULE_PATH = path.join(__dirname, '../../../app/js/AuthController.js');
 
-describe 'AuthController', ->
-	beforeEach ->
-		@celebrate = {
+describe('AuthController', function() {
+	beforeEach(function() {
+		this.celebrate = {
 			isCelebrate: sinon.stub().returns(false)
-		}
-		@logger = {
+		};
+		this.logger = {
 			info: sinon.stub()
-		}
-		@AuthHandler = {
-			login: sinon.stub()
-			oneTimeLogin: sinon.stub()
+		};
+		this.AuthHandler = {
+			login: sinon.stub(),
+			oneTimeLogin: sinon.stub(),
 			generateOneTimeLoginToken: sinon.stub()
-		}
-		@EmailHandler = {
+		};
+		this.EmailHandler = {
 			sendOneTimeLoginEmail: sinon.stub().yields()
-		}
-		@AuthController = SandboxedModule.require(MODULE_PATH, {
-			requires:
-				'celebrate': @celebrate
-				'logger-sharelatex': @logger
-				'./AuthHandler': @AuthHandler
-				'./EmailHandler': @EmailHandler
+		};
+		this.AuthController = SandboxedModule.require(MODULE_PATH, {
+			requires: {
+				'celebrate': this.celebrate,
+				'logger-sharelatex': this.logger,
+				'./AuthHandler': this.AuthHandler,
+				'./EmailHandler': this.EmailHandler,
 				'./Errors': Errors
-		})
+			}
+		});
 
-		@req = {
-			body: {}
-			session:
+		this.req = {
+			body: {},
+			session: {
 				destroy: sinon.stub().yields()
-		}
-		@res = {
-			redirect: sinon.stub()
+			}
+		};
+		this.res = {
+			redirect: sinon.stub(),
 			render: sinon.stub()
-		}
-		@next = sinon.stub()
+		};
+		return this.next = sinon.stub();
+	});
 
-	describe "login", ->
-		beforeEach ->
-			@email = "user@example.com"
-			@password = "secret123"
-			@userId = "abc123"
-			@req.body = { email: @email, password: @password }
+	describe("login", function() {
+		beforeEach(function() {
+			this.email = "user@example.com";
+			this.password = "secret123";
+			this.userId = "abc123";
+			return this.req.body = { email: this.email, password: this.password };});
 
-		it "sets the session and redirects to the project page", (done) ->
-			@AuthHandler.login.withArgs(@email, @password).yields(null, @userId)
-			@res.redirect.callsFake (url) =>
-				expect(@req.session.user_id).to.equal(@userId)
-				expect(url).to.equal('/project')
-				done()
+		return it("sets the session and redirects to the project page", function(done) {
+			this.AuthHandler.login.withArgs(this.email, this.password).yields(null, this.userId);
+			this.res.redirect.callsFake(url => {
+				expect(this.req.session.user_id).to.equal(this.userId);
+				expect(url).to.equal('/project');
+				return done();
+			});
 
-			@AuthController.login(@req, @res, @next)
+			return this.AuthController.login(this.req, this.res, this.next);
+		});
+	});
 
-	describe "handleLoginErrors", ->
-		it "rerenders the login screen on authentication failure", (done) ->
-			@res.render.callsFake (template, vars) =>
-				expect(template).to.equal("home")
-				expect(vars).to.deep.equal({ failedLogin: true })
-				done()
+	describe("handleLoginErrors", () =>
+		it("rerenders the login screen on authentication failure", function(done) {
+			this.res.render.callsFake((template, vars) => {
+				expect(template).to.equal("home");
+				expect(vars).to.deep.equal({ failedLogin: true });
+				return done();
+			});
 
-			@AuthController.handleLoginErrors(new Errors.AuthenticationError(), @req, @res, @next)
+			return this.AuthController.handleLoginErrors(new Errors.AuthenticationError(), this.req, this.res, this.next);
+		})
+	);
 
-	describe "logout", ->
-		it "clears the session and redirects to the login page", (done) ->
-			@res.redirect.callsFake (url) =>
-				expect(url).to.equal("/")
-				expect(@req.session.destroy).to.have.been.called
-				done()
+	describe("logout", () =>
+		it("clears the session and redirects to the login page", function(done) {
+			this.res.redirect.callsFake(url => {
+				expect(url).to.equal("/");
+				expect(this.req.session.destroy).to.have.been.called;
+				return done();
+			});
 
-			@AuthController.logout(@req, @res, @next)
+			return this.AuthController.logout(this.req, this.res, this.next);
+		})
+	);
 
-	describe "oneTimeLogin", ->
-		beforeEach ->
-			@email = "user@example.com"
-			@token = "secret123"
-			@userId = "abc123"
-			@req.query = { email: @email, token: @token }
+	describe("oneTimeLogin", function() {
+		beforeEach(function() {
+			this.email = "user@example.com";
+			this.token = "secret123";
+			this.userId = "abc123";
+			return this.req.query = { email: this.email, token: this.token };});
 
-		it "sets the session and redirects to the project page", (done) ->
-			@AuthHandler.oneTimeLogin.withArgs(@email, @token).yields(null, @userId)
-			@res.redirect.callsFake (url) =>
-				expect(@req.session.user_id).to.equal(@userId)
-				expect(url).to.equal('/project')
-				done()
+		return it("sets the session and redirects to the project page", function(done) {
+			this.AuthHandler.oneTimeLogin.withArgs(this.email, this.token).yields(null, this.userId);
+			this.res.redirect.callsFake(url => {
+				expect(this.req.session.user_id).to.equal(this.userId);
+				expect(url).to.equal('/project');
+				return done();
+			});
 
-			@AuthController.oneTimeLogin(@req, @res, @next)
+			return this.AuthController.oneTimeLogin(this.req, this.res, this.next);
+		});
+	});
 
-	describe "handleOneTimeLoginErrors", ->
-		it "rerenders the login screen on authentication failure", (done) ->
-			@res.render.callsFake (template, vars) =>
-				expect(template).to.equal("home")
-				expect(vars).to.deep.equal({ failedOneTimeLogin: true })
-				done()
+	describe("handleOneTimeLoginErrors", () =>
+		it("rerenders the login screen on authentication failure", function(done) {
+			this.res.render.callsFake((template, vars) => {
+				expect(template).to.equal("home");
+				expect(vars).to.deep.equal({ failedOneTimeLogin: true });
+				return done();
+			});
 
-			@AuthController.handleOneTimeLoginErrors(new Errors.AuthenticationError(), @req, @res, @next)
+			return this.AuthController.handleOneTimeLoginErrors(new Errors.AuthenticationError(), this.req, this.res, this.next);
+		})
+	);
 
-	describe "oneTimeLoginRequest", ->
-		it "sends an email with a one-time login token", (done) ->
-			email = "user@example.com"
-			token = "secret123"
-			@req.body = { email }
-			@AuthHandler.generateOneTimeLoginToken.withArgs(email).yields(null, token)
-			@res.render.callsFake () =>
-				expect(@EmailHandler.sendOneTimeLoginEmail).to.have.been.calledWith(email, token)
-				done()
+	return describe("oneTimeLoginRequest", function() {
+		it("sends an email with a one-time login token", function(done) {
+			const email = "user@example.com";
+			const token = "secret123";
+			this.req.body = { email };
+			this.AuthHandler.generateOneTimeLoginToken.withArgs(email).yields(null, token);
+			this.res.render.callsFake(() => {
+				expect(this.EmailHandler.sendOneTimeLoginEmail).to.have.been.calledWith(email, token);
+				return done();
+			});
 
-			@AuthController.oneTimeLoginRequest(@req, @res, @next)
+			return this.AuthController.oneTimeLoginRequest(this.req, this.res, this.next);
+		});
 
-		it "rerenders the request form if the email is not registered", (done) ->
-			email = "not-a-user@example.com"
-			@req.body = { email }
-			@AuthHandler.generateOneTimeLoginToken.yields(new Errors.UserNotFoundError())
-			@res.render.callsFake (template, vars) =>
-				expect(template).to.equal("one-time-login-request-form")
-				expect(vars.email).to.equal(email)
-				expect(vars.error).to.exist
-				done()
+		return it("rerenders the request form if the email is not registered", function(done) {
+			const email = "not-a-user@example.com";
+			this.req.body = { email };
+			this.AuthHandler.generateOneTimeLoginToken.yields(new Errors.UserNotFoundError());
+			this.res.render.callsFake((template, vars) => {
+				expect(template).to.equal("one-time-login-request-form");
+				expect(vars.email).to.equal(email);
+				expect(vars.error).to.exist;
+				return done();
+			});
 
-			@AuthController.oneTimeLoginRequest(@req, @res, @next)
+			return this.AuthController.oneTimeLoginRequest(this.req, this.res, this.next);
+		});
+	});
+});
