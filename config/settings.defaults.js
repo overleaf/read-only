@@ -1,57 +1,74 @@
-http = require('http')
-yn = require('yn')
+/*
+ * decaffeinate suggestions:
+ * DS205: Consider reworking code to avoid use of IIFEs
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+const http = require('http');
+const yn = require('yn');
 
-http.globalAgent.maxSockets = 300
+http.globalAgent.maxSockets = 300;
 
-MONGO_HOST = process.env['MONGO_HOST'] or "localhost"
-MONGO_URL = process.env['MONGO_URL'] or "mongodb://#{MONGO_HOST}/read_only"
-PROJECT_ARCHIVER_HOST = process.env['PROJECT_ARCHIVER_HOST'] or "localhost"
-HOST_LISTEN_PORT = process.env['HOST_LISTEN_PORT'] or 3038
+const MONGO_HOST = process.env['MONGO_HOST'] || "localhost";
+const MONGO_URL = process.env['MONGO_URL'] || `mongodb://${MONGO_HOST}/read_only`;
+const PROJECT_ARCHIVER_HOST = process.env['PROJECT_ARCHIVER_HOST'] || "localhost";
+const HOST_LISTEN_PORT = process.env['HOST_LISTEN_PORT'] || 3038;
 
-emailTransportParams = switch process.env['EMAIL_TRANSPORT']
-	when "sendgrid" then {
-		auth:
+const emailTransportParams = (() => { switch (process.env['EMAIL_TRANSPORT']) {
+	case "sendgrid": return {
+		auth: {
 			api_key: process.env['SENDGRID_API_KEY']
-	}
-	when "smtp" then {
-		host: process.env['SMTP_HOST']
-		port: process.env['SMTP_PORT'] or 25
-		auth:
-			user: process.env['SMTP_USER']
+		}
+	};
+	case "smtp": return {
+		host: process.env['SMTP_HOST'],
+		port: process.env['SMTP_PORT'] || 25,
+		auth: {
+			user: process.env['SMTP_USER'],
 			pass: process.env['SMTP_PASS']
-	}
-	else {}
+		}
+	};
+	default: return {};
+} })();
 
-module.exports =
-	behindProxy: yn(process.env['BEHIND_PROXY'], { default: false })
-	cookieDomain: process.env['COOKIE_DOMAIN']
-	cookieName: "overleaf_read_only.sid"
-	secureCookie: yn(process.env['SECURE_COOKIE'], { default: false })
+module.exports = {
+	behindProxy: yn(process.env['BEHIND_PROXY'], { default: false }),
+	cookieDomain: process.env['COOKIE_DOMAIN'],
+	cookieName: "overleaf_read_only.sid",
+	secureCookie: yn(process.env['SECURE_COOKIE'], { default: false }),
 
-	apis:
-		project_archiver:
-			url: "http://#{PROJECT_ARCHIVER_HOST}:3020"
+	apis: {
+		project_archiver: {
+			url: `http://${PROJECT_ARCHIVER_HOST}:3020`
+		}
+	},
 
-	email:
-		fromAddress: "Overleaf <welcome@overleaf.com>"
-		replyToAddress: "welcome@overleaf.com"
-		transport: process.env['EMAIL_TRANSPORT']
+	email: {
+		fromAddress: "Overleaf <welcome@overleaf.com>",
+		replyToAddress: "welcome@overleaf.com",
+		transport: process.env['EMAIL_TRANSPORT'],
 		parameters: emailTransportParams
+	},
 
-	internal:
-		read_only:
-			host: process.env['LISTEN_ADDRESS'] or "localhost"
+	internal: {
+		read_only: {
+			host: process.env['LISTEN_ADDRESS'] || "localhost",
 			port: HOST_LISTEN_PORT
+		}
+	},
 
-	mongo:
+	mongo: {
 		url: MONGO_URL
+	},
 
-	security:
-		sessionSecret: process.env['SESSION_SECRET'] or "not-so-secret"
+	security: {
+		sessionSecret: process.env['SESSION_SECRET'] || "not-so-secret"
+	},
 
-	siteUrl: process.env['PUBLIC_URL'] or "http://localhost:#{HOST_LISTEN_PORT}"
+	siteUrl: process.env['PUBLIC_URL'] || `http://localhost:${HOST_LISTEN_PORT}`,
 
-	smokeTest:
-		email: process.env['SMOKE_TEST_EMAIL']
-		password: process.env['SMOKE_TEST_PASSWORD']
+	smokeTest: {
+		email: process.env['SMOKE_TEST_EMAIL'],
+		password: process.env['SMOKE_TEST_PASSWORD'],
 		projectId: process.env['SMOKE_TEST_PROJECT_ID']
+	}
+};
