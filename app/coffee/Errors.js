@@ -1,3 +1,8 @@
+/* eslint-disable
+    no-proto,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 var AuthenticationError = function(msg) {
 	const err = new Error(msg);
 	err.name = 'AuthenticationError';

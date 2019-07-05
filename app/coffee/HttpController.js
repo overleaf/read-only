@@ -1,3 +1,9 @@
+/* eslint-disable
+    camelcase,
+    no-unused-vars,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -69,11 +75,11 @@ module.exports = (HttpController = {
 			if ((project == null)) {
 				logger.log({project_id}, "project not found");
 				res.status(404).end();
-				return;
+				
 			} else if (project.owner_ref.toString() !== req.session.user_id) {
 				logger.log({project_id, owner_ref: project.owner_ref.toString(), user_id: req.session.user_id}, "unauthorized project download");
 				res.status(403).end();
-				return;
+				
 			} else {
 				const url = `${Settings.apis.project_archiver.url}/project/${project._id}/zip`;
 				logger.log({project_id, url}, "proxying request to project archiver");
