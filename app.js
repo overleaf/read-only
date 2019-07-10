@@ -3,7 +3,7 @@ const Settings = require('settings-sharelatex')
 const logger = require('logger-sharelatex')
 const express = require('express')
 const Metrics = require('metrics-sharelatex')
-const path = require('path')
+const Path = require('path')
 
 const EmailSender = require('./app/js/EmailSender')
 const MongoHandler = require('./app/js/MongoHandler')
@@ -14,8 +14,9 @@ logger.initialize('read-only')
 EmailSender.initialize()
 
 const app = express()
-app.set('views', path.join(__dirname, 'app/views'))
+app.set('views', Path.join(__dirname, 'app/views'))
 app.set('view engine', 'pug')
+app.set('trust proxy', Settings.behindProxy)
 Router.initialize(app)
 
 const { port } = Settings.internal.read_only

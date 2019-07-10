@@ -40,7 +40,8 @@ describe('AuthController', function() {
     }
     this.res = {
       redirect: sinon.stub(),
-      render: sinon.stub()
+      render: sinon.stub(),
+      status: sinon.stub().returnsThis()
     }
     this.next = sinon.stub()
   })
@@ -70,6 +71,7 @@ describe('AuthController', function() {
   describe('handleLoginErrors', () =>
     it('rerenders the login screen on authentication failure', function(done) {
       this.res.render.callsFake((template, vars) => {
+        expect(this.res.status).to.have.been.calledWith(400)
         expect(template).to.equal('home')
         expect(vars).to.deep.equal({ failedLogin: true })
         done()
@@ -119,6 +121,7 @@ describe('AuthController', function() {
   describe('handleOneTimeLoginErrors', () =>
     it('rerenders the login screen on authentication failure', function(done) {
       this.res.render.callsFake((template, vars) => {
+        expect(this.res.status).to.have.been.calledWith(400)
         expect(template).to.equal('home')
         expect(vars).to.deep.equal({ failedOneTimeLogin: true })
         done()
@@ -158,6 +161,7 @@ describe('AuthController', function() {
         new Errors.UserNotFoundError()
       )
       this.res.render.callsFake((template, vars) => {
+        expect(this.res.status).to.have.been.calledWith(400)
         expect(template).to.equal('one-time-login-request-form')
         expect(vars.email).to.equal(email)
         expect(vars.error).to.exist

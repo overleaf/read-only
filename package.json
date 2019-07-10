@@ -22,6 +22,7 @@
     "coffeescript": "^1.12.7",
     "connect-mongo": "^3.0.0",
     "express": "^4.17.1",
+    "express-rate-limit": "^5.0.0",
     "express-session": "^1.12.1",
     "lodash": "^4.17.11",
     "logger-sharelatex": "^1.7.0",

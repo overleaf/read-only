@@ -8,6 +8,7 @@ const SmokeTest = require('smoke-test-sharelatex')
 const AuthController = require('./AuthController')
 const HttpController = require('./HttpController')
 const SessionMiddleware = require('./SessionMiddleware')
+const RateLimitMiddleware = require('./RateLimitMiddleware')
 
 module.exports = {
   initialize
@@ -33,6 +34,7 @@ function initialize(app) {
           .required()
       })
     }),
+    RateLimitMiddleware.loginRateLimiter(),
     AuthController.login,
     AuthController.handleLoginErrors
   )
@@ -50,6 +52,7 @@ function initialize(app) {
           .required()
       })
     }),
+    RateLimitMiddleware.tokenRequestRateLimiter(),
     AuthController.oneTimeLoginRequest,
     AuthController.handleOneTimeLoginRequestErrors
   )
@@ -66,6 +69,7 @@ function initialize(app) {
           .required()
       })
     }),
+    RateLimitMiddleware.loginRateLimiter(),
     AuthController.oneTimeLogin,
     AuthController.handleOneTimeLoginErrors
   )
@@ -80,6 +84,6 @@ function initialize(app) {
 
   app.get(
     '/health_check',
-    SmokeTest.run(path.join(__dirname, '../../../test/smoke/js/test.js'), 30000)
+    SmokeTest.run(path.join(__dirname, '../../test/smoke/js/test.js'), 30000)
   )
 }

@@ -21,7 +21,7 @@ module.exports = {
 
   handleLoginErrors(err, req, res, next) {
     if (err instanceof Errors.AuthenticationError || isCelebrate(err)) {
-      res.render('home', { failedLogin: true })
+      res.status(400).render('home', { failedLogin: true })
     } else {
       next(err)
     }
@@ -51,7 +51,7 @@ module.exports = {
 
   handleOneTimeLoginErrors(err, req, res, next) {
     if (err instanceof Errors.AuthenticationError || isCelebrate(err)) {
-      res.render('home', { failedOneTimeLogin: true })
+      res.status(400).render('home', { failedOneTimeLogin: true })
     } else {
       next(err)
     }
@@ -66,7 +66,7 @@ module.exports = {
     AuthHandler.generateOneTimeLoginToken(email, function(err, token) {
       if (err != null) {
         if (err instanceof Errors.UserNotFoundError) {
-          res.render('one-time-login-request-form', {
+          res.status(400).render('one-time-login-request-form', {
             error: 'This email address is not registered in Overleaf',
             email
           })
@@ -86,7 +86,7 @@ module.exports = {
 
   handleOneTimeLoginRequestErrors(err, req, res, next) {
     if (err instanceof Errors.UserNotFoundError || isCelebrate(err)) {
-      res.render('one-time-login-request-form', {
+      res.status(400).render('one-time-login-request-form', {
         error: 'This email address is not registered in Overleaf',
         email: req.body.email
       })
