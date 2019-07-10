@@ -1,45 +1,32 @@
-/* eslint-disable
-    camelcase,
-    no-unused-vars,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
-let HttpController
 const logger = require('logger-sharelatex')
 const { db, ObjectId } = require('./MongoHandler')
 const request = require('request')
 const Settings = require('settings-sharelatex')
 
-module.exports = HttpController = {
+module.exports = {
   home(req, res, next) {
     if (req.session.user_id != null) {
-      return res.redirect('/project')
+      res.redirect('/project')
     } else {
-      return res.render('home')
+      res.render('home')
     }
   },
 
   projects(req, res, next) {
-    let user_id
+    let userId
     if (req.session.user_id == null) {
       res.redirect('/')
       return
     }
     try {
-      user_id = ObjectId(req.session.user_id)
+      userId = ObjectId(req.session.user_id)
     } catch (error1) {
       const error = error1
       return next(error)
     }
 
-    logger.log({ user_id: user_id.toString() }, 'showing project page')
-    return db.projects.find({ owner_ref: user_id }, function(error, projects) {
+    logger.log({ userId: userId.toString() }, 'showing project page')
+    db.projects.find({ owner_ref: userId }, function(error, projects) {
       if (error != null) {
         return next(error)
       }
@@ -52,46 +39,46 @@ module.exports = HttpController = {
           return 0
         }
       })
-      return res.render('projects', { projects })
+      res.render('projects', { projects })
     })
   },
 
   getProject(req, res, next) {
-    let project_id
-    logger.log({ project_id }, 'downloading project')
+    let projectId
+    logger.log({ projectId }, 'downloading project')
     if (req.session.user_id == null) {
-      logger.err({ project_id }, 'no user in session, not downloading project')
+      logger.err({ projectId }, 'no user in session, not downloading project')
       res.status(403).end()
       return
     }
 
     try {
-      project_id = ObjectId(req.params.project_id)
+      projectId = ObjectId(req.params.project_id)
     } catch (error1) {
       const error = error1
       return next(error)
     }
 
-    return db.projects.findOne({ _id: project_id }, function(error, project) {
+    db.projects.findOne({ _id: projectId }, function(error, project) {
       if (error != null) {
         return next(error)
       }
       if (project == null) {
-        logger.log({ project_id }, 'project not found')
+        logger.log({ projectId }, 'project not found')
         res.status(404).end()
       } else if (project.owner_ref.toString() !== req.session.user_id) {
         logger.log(
           {
-            project_id,
+            projectId,
             owner_ref: project.owner_ref.toString(),
-            user_id: req.session.user_id
+            userId: req.session.user_id
           },
           'unauthorized project download'
         )
         res.status(403).end()
       } else {
         const url = `${Settings.apis.project_archiver.url}/project/${project._id}/zip`
-        logger.log({ project_id, url }, 'proxying request to project archiver')
+        logger.log({ projectId, url }, 'proxying request to project archiver')
         const upstream = request.get({ url })
         upstream.pause()
         res.header(
@@ -100,10 +87,10 @@ module.exports = HttpController = {
         )
         upstream.on('error', error => next(error))
         upstream.on('end', () => res.end())
-        return upstream.on('response', function(response) {
+        upstream.on('response', function(response) {
           res.status(response.statusCode)
           upstream.pipe(res)
-          return upstream.resume()
+          upstream.resume()
         })
       }
     })

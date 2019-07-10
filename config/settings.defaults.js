@@ -1,10 +1,3 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
-/*
- * decaffeinate suggestions:
- * DS205: Consider reworking code to avoid use of IIFEs
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 const http = require('http')
 const yn = require('yn')
 
@@ -17,27 +10,28 @@ const PROJECT_ARCHIVER_HOST =
   process.env['PROJECT_ARCHIVER_HOST'] || 'localhost'
 const HOST_LISTEN_PORT = process.env['HOST_LISTEN_PORT'] || 3038
 
-const emailTransportParams = (() => {
-  switch (process.env['EMAIL_TRANSPORT']) {
-    case 'sendgrid':
-      return {
-        auth: {
-          api_key: process.env['SENDGRID_API_KEY']
-        }
+let emailTransportParams
+switch (process.env['EMAIL_TRANSPORT']) {
+  case 'sendgrid':
+    emailTransportParams = {
+      auth: {
+        api_key: process.env['SENDGRID_API_KEY']
       }
-    case 'smtp':
-      return {
-        host: process.env['SMTP_HOST'],
-        port: process.env['SMTP_PORT'] || 25,
-        auth: {
-          user: process.env['SMTP_USER'],
-          pass: process.env['SMTP_PASS']
-        }
+    }
+    break
+  case 'smtp':
+    emailTransportParams = {
+      host: process.env['SMTP_HOST'],
+      port: process.env['SMTP_PORT'] || 25,
+      auth: {
+        user: process.env['SMTP_USER'],
+        pass: process.env['SMTP_PASS']
       }
-    default:
-      return {}
-  }
-})()
+    }
+    break
+  default:
+    emailTransportParams = {}
+}
 
 module.exports = {
   behindProxy: yn(process.env['BEHIND_PROXY'], { default: false }),
