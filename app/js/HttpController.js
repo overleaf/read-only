@@ -1,5 +1,6 @@
 const logger = require('logger-sharelatex')
-const { db, ObjectId } = require('./MongoHandler')
+const { ObjectId } = require('mongodb')
+const { db } = require('./MongoHandler')
 const request = require('request')
 const Settings = require('settings-sharelatex')
 
@@ -26,11 +27,11 @@ module.exports = {
     }
 
     logger.log({ userId: userId.toString() }, 'showing project page')
-    db.projects.find({ owner_ref: userId }, function(error, projects) {
+    db.projects.find({ owner_ref: userId }).toArray((error, projects) => {
       if (error != null) {
         return next(error)
       }
-      projects = projects.sort(function(a, b) {
+      projects = projects.sort((a, b) => {
         if (a.lastUpdated > b.lastUpdated) {
           return -1
         } else if (a.lastUpdated < b.lastUpdated) {
@@ -59,7 +60,7 @@ module.exports = {
       return next(error)
     }
 
-    db.projects.findOne({ _id: projectId }, function(error, project) {
+    db.projects.findOne({ _id: projectId }, (error, project) => {
       if (error != null) {
         return next(error)
       }
@@ -87,7 +88,7 @@ module.exports = {
         )
         upstream.on('error', error => next(error))
         upstream.on('end', () => res.end())
-        upstream.on('response', function(response) {
+        upstream.on('response', response => {
           res.status(response.statusCode)
           upstream.pipe(res)
           upstream.resume()

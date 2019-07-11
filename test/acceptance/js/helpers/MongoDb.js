@@ -1,14 +1,14 @@
 const async = require('async')
 const bcrypt = require('bcrypt')
-const mongojs = require('mongojs')
 const logger = require('logger-sharelatex')
+const { MongoClient } = require('mongodb')
 const Settings = require('settings-sharelatex')
 
 module.exports = {
   running: false,
   initing: false,
   callbacks: [],
-  db: mongojs(Settings.mongo.url, ['users', 'projects']),
+  db: null,
 
   ensureRunning(callback) {
     if (this.running) {
@@ -20,15 +20,20 @@ module.exports = {
     }
     this.initing = true
     this.callbacks.push(callback)
-    // Force a connection by executing a command
-    this.db.stats(err => {
-      if (!err) {
-        this.running = true
-        logger.info('MongoDB ready')
+    this._connect(callback)
+  },
+
+  _connect(callback) {
+    const client = new MongoClient(Settings.mongo.url, {
+      useNewUrlParser: true
+    })
+    client.connect((err, connection) => {
+      if (err != null) {
+        return callback(err)
       }
-      for (callback of this.callbacks) {
-        callback(err)
-      }
+      this.db = connection.db(Settings.mongo.db)
+      logger.info('MongoDB ready')
+      callback()
     })
   },
 
@@ -42,21 +47,18 @@ module.exports = {
         user: [
           'hashedPassword',
           ({ hashedPassword }, cb) => {
-            this.db.users.insert(
-              {
-                email,
-                hashedPassword
-              },
-              cb
-            )
+            cb(null, { email, hashedPassword })
+          }
+        ],
+        insertUser: [
+          'user',
+          ({ user }, cb) => {
+            this.db.collection('users').insertOne(user, cb)
           }
         ],
         projects: [
-          'user',
+          'insertUser',
           ({ user }, cb) => {
-            if (numProjects === 0) {
-              return cb(null, [])
-            }
             const projects = []
             for (let i = 0; i < numProjects; i++) {
               projects.push({
@@ -67,7 +69,16 @@ module.exports = {
                 readOnly_refs: []
               })
             }
-            this.db.projects.insert(projects, cb)
+            cb(null, projects)
+          }
+        ],
+        insertProjects: [
+          'projects',
+          ({ projects }, cb) => {
+            if (projects.length === 0) {
+              return cb(null, [])
+            }
+            this.db.collection('projects').insertMany(projects, cb)
           }
         ]
       },

@@ -60,7 +60,8 @@ module.exports = {
   },
 
   mongo: {
-    url: MONGO_URL
+    url: MONGO_URL,
+    db: 'read_only'
   },
 
   security: {

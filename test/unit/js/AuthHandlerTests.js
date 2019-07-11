@@ -27,8 +27,8 @@ describe('AuthHandler', function() {
       },
       oneTimeLoginTokens: {
         findOne: sinon.stub(),
-        insert: sinon.stub().yields(),
-        update: sinon.stub().yields()
+        insertOne: sinon.stub().yields(),
+        updateOne: sinon.stub().yields()
       }
     }
     this.AuthHandler = SandboxedModule.require(MODULE_PATH, {
@@ -136,7 +136,7 @@ describe('AuthHandler', function() {
             usedAt: { $exists: false }
           })
         )
-        expect(this.db.oneTimeLoginTokens.update).to.have.been.calledWith(
+        expect(this.db.oneTimeLoginTokens.updateOne).to.have.been.calledWith(
           { _id: this.tokenId },
           {
             $set: {
@@ -210,7 +210,7 @@ describe('AuthHandler', function() {
         if (err != null) {
           return done(err)
         }
-        expect(this.db.oneTimeLoginTokens.insert).to.have.been.calledWith({
+        expect(this.db.oneTimeLoginTokens.insertOne).to.have.been.calledWith({
           email,
           token: 'deadbeef',
           createdAt: sinon.match.date,

@@ -1,4 +1,4 @@
-const app = require('../../../../app')
+const { startApp } = require('../../../../app')
 const logger = require('logger-sharelatex')
 
 module.exports = {
@@ -16,7 +16,7 @@ module.exports = {
     }
     this.initing = true
     this.callbacks.push(callback)
-    app.listen(3038, err => {
+    startApp('localhost', 3038, err => {
       if (err == null) {
         this.running = true
         logger.info('read-only running in dev mode')

@@ -85,7 +85,7 @@ module.exports = {
           'checkUser',
           'tokenDoc',
           ({ tokenDoc }, cb) => {
-            db.oneTimeLoginTokens.update(
+            db.oneTimeLoginTokens.updateOne(
               { _id: tokenDoc._id },
               { $set: { usedAt: now } },
               cb
@@ -121,7 +121,7 @@ module.exports = {
         createdAt: now,
         expiresAt
       }
-      db.oneTimeLoginTokens.insert(doc, function(err) {
+      db.oneTimeLoginTokens.insertOne(doc, function(err) {
         if (err != null) {
           return callback(err)
         }
