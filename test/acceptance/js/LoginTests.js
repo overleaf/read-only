@@ -1,14 +1,3 @@
-/* eslint-disable
-    no-undef,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 const _ = require('lodash')
 const async = require('async')
 const { JSDOM } = require('jsdom')
@@ -33,13 +22,13 @@ describe('ReadOnly', function() {
     const expectedProjects = user.projects.map(project =>
       project._id.toString()
     )
-    return expect(projects).to.have.members(expectedProjects)
+    expect(projects).to.have.members(expectedProjects)
   }
 
   before('Ensure Mongo is running', done => MongoDb.ensureRunning(done))
 
   before('Prepare dummy data', function(done) {
-    return async.mapValuesSeries(
+    async.mapValuesSeries(
       {
         noProjects: {
           email: 'no-projects@example.com',
@@ -58,14 +47,14 @@ describe('ReadOnly', function() {
         }
       },
       (value, key, cb) => {
-        return MongoDb.createDummyUser(value, cb)
+        MongoDb.createDummyUser(value, cb)
       },
       (err, users) => {
         if (err != null) {
           return done(err)
         }
         this.users = users
-        return done()
+        done()
       }
     )
   })
@@ -86,68 +75,124 @@ describe('ReadOnly', function() {
         const doc = parseHtml(res.body)
         const loginForm = doc.querySelector('form[action="/login"]')
         expect(loginForm).to.exist
-        return done()
+        done()
       })))
 
   describe('password login', () =>
     it("logs the user in and shows the user's projects", function(done) {
       const user = this.users.twoProjects
       const cookieJar = request.jar()
-      return request.post(
+      async.auto(
         {
-          url: appUrl('/login'),
-          jar: cookieJar,
-          form: {
-            email: user.email,
-            password: user.password
+          loginForm: cb => {
+            request.get(
+              {
+                url: appUrl('/'),
+                jar: cookieJar
+              },
+              (err, res) => {
+                cb(err, res)
+              }
+            )
           },
-          followRedirect: res => {
-            return res.headers['location'] === '/project'
-          },
-          followAllRedirects: true
+          csrfToken: [
+            'loginForm',
+            ({ loginForm }, cb) => {
+              const doc = parseHtml(loginForm.body)
+              const csrfToken = doc.querySelector('input[name="_csrf"]').value
+              cb(null, csrfToken)
+            }
+          ],
+          login: [
+            'csrfToken',
+            ({ csrfToken }, cb) => {
+              console.log({ csrfToken })
+              request.post(
+                {
+                  url: appUrl('/login'),
+                  jar: cookieJar,
+                  form: {
+                    _csrf: csrfToken,
+                    email: user.email,
+                    password: user.password
+                  },
+                  followRedirect: res => {
+                    return res.headers['location'] === '/project'
+                  },
+                  followAllRedirects: true
+                },
+                (err, res) => {
+                  cb(err, res)
+                }
+              )
+            }
+          ]
         },
-        (err, res) => {
+        (err, { login }) => {
           if (err != null) {
             return done(err)
           }
-          expect(res.statusCode).to.equal(200)
-          validateUserProjectPage(user, res.body)
-          return done()
+          expect(login.statusCode).to.equal(200)
+          validateUserProjectPage(user, login.body)
+          done()
         }
       )
     }))
 
-  return describe('one-time login', () =>
+  describe('one-time login', () =>
     it('sends an email with a one-time login link', function(done) {
       const user = this.users.oneProject
       const cookieJar = request.jar()
-      return async.auto(
+      async.auto(
         {
           email(cb) {
-            return MockEmailServer.waitForEmail(cb)
+            MockEmailServer.waitForEmail(cb)
           },
-          requestResponse(cb) {
-            return request.post(
+          requestResponseForm: cb => {
+            request.get(
               {
                 url: appUrl('/one-time-login/request'),
-                jar: cookieJar,
-                form: {
-                  email: user.email
-                },
-                followAllRedirects: true
+                jar: cookieJar
               },
               (err, res) => {
-                return cb(err, res)
+                cb(err, res)
               }
             )
           },
+          csrfToken: [
+            'requestResponseForm',
+            ({ requestResponseForm }, cb) => {
+              const doc = parseHtml(requestResponseForm.body)
+              const csrfToken = doc.querySelector('input[name="_csrf"]').value
+              cb(null, csrfToken)
+            }
+          ],
+          requestResponse: [
+            'csrfToken',
+            ({ csrfToken }, cb) => {
+              request.post(
+                {
+                  url: appUrl('/one-time-login/request'),
+                  jar: cookieJar,
+                  form: {
+                    _csrf: csrfToken,
+                    email: user.email
+                  },
+                  followAllRedirects: true
+                },
+                (err, res) => {
+                  cb(err, res)
+                }
+              )
+            }
+          ],
           loginUrl: [
             'email',
             function({ email }, cb) {
               const doc = parseHtml(email.html)
               const link = doc.querySelector('a[href*="one-time-login"]')
               const url = link.href
-              return cb(null, url)
+              cb(null, url)
             }
           ],
           loginResponse: [
@@ -159,7 +204,7 @@ describe('ReadOnly', function() {
                   jar: cookieJar
                 },
                 (err, res) => {
-                  return cb(err, res)
+                  cb(err, res)
                 }
               )
           ]
@@ -171,7 +216,7 @@ describe('ReadOnly', function() {
           expect(requestResponse.statusCode).to.equal(200)
           expect(loginResponse.statusCode).to.equal(200)
           validateUserProjectPage(user, loginResponse.body)
-          return done()
+          done()
         }
       )
     }))

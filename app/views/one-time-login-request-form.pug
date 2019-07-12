@@ -11,6 +11,7 @@ block content
 						| link that will log you into Overleaf's read only
 						| maintenance site, so you can download your projects.
 					form(action="/one-time-login/request", method="POST")
+						+csrfToken
 						if error
 							.alert.alert-danger #{error}
 						.form-group
