@@ -1,14 +1,3 @@
-/* eslint-disable
-    no-return-assign,
-    no-undef,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 const path = require('path')
 const sinon = require('sinon')
 const { expect } = require('chai')
@@ -51,9 +40,10 @@ describe('AuthController', function() {
     }
     this.res = {
       redirect: sinon.stub(),
-      render: sinon.stub()
+      render: sinon.stub(),
+      status: sinon.stub().returnsThis()
     }
-    return (this.next = sinon.stub())
+    this.next = sinon.stub()
   })
 
   describe('login', function() {
@@ -61,32 +51,33 @@ describe('AuthController', function() {
       this.email = 'user@example.com'
       this.password = 'secret123'
       this.userId = 'abc123'
-      return (this.req.body = { email: this.email, password: this.password })
+      this.req.body = { email: this.email, password: this.password }
     })
 
-    return it('sets the session and redirects to the project page', function(done) {
+    it('sets the session and redirects to the project page', function(done) {
       this.AuthHandler.login
         .withArgs(this.email, this.password)
         .yields(null, this.userId)
       this.res.redirect.callsFake(url => {
         expect(this.req.session.user_id).to.equal(this.userId)
         expect(url).to.equal('/project')
-        return done()
+        done()
       })
 
-      return this.AuthController.login(this.req, this.res, this.next)
+      this.AuthController.login(this.req, this.res, this.next)
     })
   })
 
   describe('handleLoginErrors', () =>
     it('rerenders the login screen on authentication failure', function(done) {
       this.res.render.callsFake((template, vars) => {
+        expect(this.res.status).to.have.been.calledWith(400)
         expect(template).to.equal('home')
         expect(vars).to.deep.equal({ failedLogin: true })
-        return done()
+        done()
       })
 
-      return this.AuthController.handleLoginErrors(
+      this.AuthController.handleLoginErrors(
         new Errors.AuthenticationError(),
         this.req,
         this.res,
@@ -99,10 +90,10 @@ describe('AuthController', function() {
       this.res.redirect.callsFake(url => {
         expect(url).to.equal('/')
         expect(this.req.session.destroy).to.have.been.called
-        return done()
+        done()
       })
 
-      return this.AuthController.logout(this.req, this.res, this.next)
+      this.AuthController.logout(this.req, this.res, this.next)
     }))
 
   describe('oneTimeLogin', function() {
@@ -110,32 +101,33 @@ describe('AuthController', function() {
       this.email = 'user@example.com'
       this.token = 'secret123'
       this.userId = 'abc123'
-      return (this.req.query = { email: this.email, token: this.token })
+      this.req.query = { email: this.email, token: this.token }
     })
 
-    return it('sets the session and redirects to the project page', function(done) {
+    it('sets the session and redirects to the project page', function(done) {
       this.AuthHandler.oneTimeLogin
         .withArgs(this.email, this.token)
         .yields(null, this.userId)
       this.res.redirect.callsFake(url => {
         expect(this.req.session.user_id).to.equal(this.userId)
         expect(url).to.equal('/project')
-        return done()
+        done()
       })
 
-      return this.AuthController.oneTimeLogin(this.req, this.res, this.next)
+      this.AuthController.oneTimeLogin(this.req, this.res, this.next)
     })
   })
 
   describe('handleOneTimeLoginErrors', () =>
     it('rerenders the login screen on authentication failure', function(done) {
       this.res.render.callsFake((template, vars) => {
+        expect(this.res.status).to.have.been.calledWith(400)
         expect(template).to.equal('home')
         expect(vars).to.deep.equal({ failedOneTimeLogin: true })
-        return done()
+        done()
       })
 
-      return this.AuthController.handleOneTimeLoginErrors(
+      this.AuthController.handleOneTimeLoginErrors(
         new Errors.AuthenticationError(),
         this.req,
         this.res,
@@ -143,7 +135,7 @@ describe('AuthController', function() {
       )
     }))
 
-  return describe('oneTimeLoginRequest', function() {
+  describe('oneTimeLoginRequest', function() {
     it('sends an email with a one-time login token', function(done) {
       const email = 'user@example.com'
       const token = 'secret123'
@@ -156,34 +148,27 @@ describe('AuthController', function() {
           email,
           token
         )
-        return done()
+        done()
       })
 
-      return this.AuthController.oneTimeLoginRequest(
-        this.req,
-        this.res,
-        this.next
-      )
+      this.AuthController.oneTimeLoginRequest(this.req, this.res, this.next)
     })
 
-    return it('rerenders the request form if the email is not registered', function(done) {
+    it('rerenders the request form if the email is not registered', function(done) {
       const email = 'not-a-user@example.com'
       this.req.body = { email }
       this.AuthHandler.generateOneTimeLoginToken.yields(
         new Errors.UserNotFoundError()
       )
       this.res.render.callsFake((template, vars) => {
+        expect(this.res.status).to.have.been.calledWith(400)
         expect(template).to.equal('one-time-login-request-form')
         expect(vars.email).to.equal(email)
         expect(vars.error).to.exist
-        return done()
+        done()
       })
 
-      return this.AuthController.oneTimeLoginRequest(
-        this.req,
-        this.res,
-        this.next
-      )
+      this.AuthController.oneTimeLoginRequest(this.req, this.res, this.next)
     })
   })
 })

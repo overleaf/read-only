@@ -1,0 +1,13 @@
+extends ./layout
+
+block content
+	.container
+		.row-spaced
+		.row
+			.col-md-6.col-md-offset-3
+				.card
+					.alert.alert-danger Too many requests
+					p
+						| We have detected an unusual number of access requests
+						| originating from your IP address. Please try again in
+						| a few minutes.
