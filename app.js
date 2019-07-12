@@ -9,20 +9,30 @@ const EmailSender = require('./app/js/EmailSender')
 const MongoHandler = require('./app/js/MongoHandler')
 const Router = require('./app/js/Router')
 
-Metrics.initialize('read-only')
-logger.initialize('read-only')
-EmailSender.initialize()
+module.exports = { startApp }
 
-const app = express()
-app.set('views', Path.join(__dirname, 'app/views'))
-app.set('view engine', 'pug')
-app.set('trust proxy', Settings.behindProxy)
-Router.initialize(app)
-
-const { port } = Settings.internal.read_only
-const { host } = Settings.internal.read_only
 if (!module.parent) {
   // Called directly
+  const { host, port } = Settings.internal.read_only
+
+  startApp(host, port, err => {
+    if (err != null) {
+      throw err
+    }
+    logger.info(`HTTP server ready and listening on ${host}:${port}`)
+  })
+}
+
+function startApp(host, port, callback) {
+  const app = express()
+  app.set('views', Path.join(__dirname, 'app/views'))
+  app.set('view engine', 'pug')
+  app.set('trust proxy', Settings.behindProxy)
+  Router.initialize(app)
+  Metrics.initialize('read-only')
+  logger.initialize('read-only')
+  EmailSender.initialize()
+
   async.series(
     {
       initDb(cb) {
@@ -33,13 +43,6 @@ if (!module.parent) {
         app.listen(port, host, cb)
       }
     },
-    function(err) {
-      if (err != null) {
-        throw err
-      }
-      logger.info(`HTTP server ready and listening on ${host}:${port}`)
-    }
+    callback
   )
 }
-
-module.exports = app

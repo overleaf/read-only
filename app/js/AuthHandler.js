@@ -1,15 +1,3 @@
-/* eslint-disable
-    no-unused-vars,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
-let AuthHandler
 const _ = require('lodash')
 const async = require('async')
 const bcrypt = require('bcrypt')
@@ -22,12 +10,9 @@ const Errors = require('./Errors')
 const TOKEN_TTL_MS = 60 * 60 * 1000 // 1 hour
 const TOKEN_SEARCH_PREFIX_LENGTH = 16 // 8 bytes
 
-module.exports = AuthHandler = {
+module.exports = {
   login(email, password, callback) {
-    return db.users.findOne({ email: email.toLowerCase() }, function(
-      err,
-      user
-    ) {
+    db.users.findOne({ email: email.toLowerCase() }, function(err, user) {
       if (err != null) {
         return callback(err)
       }
@@ -39,17 +24,14 @@ module.exports = AuthHandler = {
           new Errors.AuthenticationError('user does not have a password')
         )
       }
-      return bcrypt.compare(password, user.hashedPassword, function(
-        err,
-        match
-      ) {
+      bcrypt.compare(password, user.hashedPassword, function(err, match) {
         if (err != null) {
           return callback(err)
         }
         if (!match) {
           return callback(new Errors.AuthenticationError('incorrect password'))
         }
-        return callback(null, user._id.toString())
+        callback(null, user._id.toString())
       })
     })
   },
@@ -57,14 +39,14 @@ module.exports = AuthHandler = {
   oneTimeLogin(email, token, callback) {
     const now = new Date()
     const normalizedEmail = email.toLowerCase()
-    return async.auto(
+    async.auto(
       {
         tokenDoc: cb => {
           const tokenPrefix = token.slice(0, TOKEN_SEARCH_PREFIX_LENGTH)
           const tokenPrefixRegexp = new RegExp(
             `^${_.escapeRegExp(tokenPrefix)}`
           )
-          return db.oneTimeLoginTokens.findOne(
+          db.oneTimeLoginTokens.findOne(
             {
               email: normalizedEmail,
               token: tokenPrefixRegexp,
@@ -83,11 +65,11 @@ module.exports = AuthHandler = {
             if (!this._compareTokens(token, tokenDoc.token)) {
               return cb(new Errors.AuthenticationError('invalid token'))
             }
-            return cb()
+            cb()
           }
         ],
         user: cb => {
-          return db.users.findOne({ email: normalizedEmail }, cb)
+          db.users.findOne({ email: normalizedEmail }, cb)
         },
         checkUser: [
           'user',
@@ -95,7 +77,7 @@ module.exports = AuthHandler = {
             if (user == null) {
               return cb(new Errors.AuthenticationError('user not found'))
             }
-            return cb()
+            cb()
           }
         ],
         useToken: [
@@ -103,7 +85,7 @@ module.exports = AuthHandler = {
           'checkUser',
           'tokenDoc',
           ({ tokenDoc }, cb) => {
-            return db.oneTimeLoginTokens.update(
+            db.oneTimeLoginTokens.updateOne(
               { _id: tokenDoc._id },
               { $set: { usedAt: now } },
               cb
@@ -115,16 +97,13 @@ module.exports = AuthHandler = {
         if (err != null) {
           return callback(err)
         }
-        return callback(null, user._id.toString())
+        callback(null, user._id.toString())
       }
     )
   },
 
   generateOneTimeLoginToken(email, callback) {
-    return db.users.findOne({ email: email.toLowerCase() }, function(
-      err,
-      user
-    ) {
+    db.users.findOne({ email: email.toLowerCase() }, function(err, user) {
       if (err != null) {
         return callback(err)
       }
@@ -142,11 +121,11 @@ module.exports = AuthHandler = {
         createdAt: now,
         expiresAt
       }
-      return db.oneTimeLoginTokens.insert(doc, function(err) {
+      db.oneTimeLoginTokens.insertOne(doc, function(err) {
         if (err != null) {
           return callback(err)
         }
-        return callback(null, token)
+        callback(null, token)
       })
     })
   },
