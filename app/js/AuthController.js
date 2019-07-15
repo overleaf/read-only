@@ -6,6 +6,10 @@ const EmailHandler = require('./EmailHandler')
 const Errors = require('./Errors')
 
 module.exports = {
+  loginForm(req, res, next) {
+    res.render('login-form')
+  },
+
   login(req, res, next) {
     const { email, password } = req.body
     logger.info({ email }, 'received password login request')
@@ -21,7 +25,7 @@ module.exports = {
 
   handleLoginErrors(err, req, res, next) {
     if (err instanceof Errors.AuthenticationError || isCelebrate(err)) {
-      res.status(400).render('home', { failedLogin: true })
+      res.status(400).render('login-form', { failedLogin: true })
     } else {
       next(err)
     }
@@ -51,7 +55,7 @@ module.exports = {
 
   handleOneTimeLoginErrors(err, req, res, next) {
     if (err instanceof Errors.AuthenticationError || isCelebrate(err)) {
-      res.status(400).render('home', { failedOneTimeLogin: true })
+      res.status(400).render('login-form', { failedOneTimeLogin: true })
     } else {
       next(err)
     }

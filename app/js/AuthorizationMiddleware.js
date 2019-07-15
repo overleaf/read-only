@@ -8,7 +8,7 @@ module.exports = {
 
 async function restricted(req, res, next) {
   if (req.session.userId == null) {
-    return res.redirect('/')
+    return res.redirect('/login')
   }
 
   let userId
@@ -18,12 +18,12 @@ async function restricted(req, res, next) {
   } catch (err) {
     // Malformed user id. Better clear the session.
     delete req.session.userId
-    return res.redirect('/')
+    return res.redirect('/login')
   }
 
   const user = await db.users.findOne({ _id: userId })
   if (user == null) {
-    return res.redirect('/')
+    return res.redirect('/login')
   }
   res.locals.user = user
   next()

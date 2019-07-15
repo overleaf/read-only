@@ -72,7 +72,7 @@ describe('AuthController', function() {
     it('rerenders the login screen on authentication failure', function(done) {
       this.res.render.callsFake((template, vars) => {
         expect(this.res.status).to.have.been.calledWith(400)
-        expect(template).to.equal('home')
+        expect(template).to.equal('login-form')
         expect(vars).to.deep.equal({ failedLogin: true })
         done()
       })
@@ -122,7 +122,7 @@ describe('AuthController', function() {
     it('rerenders the login screen on authentication failure', function(done) {
       this.res.render.callsFake((template, vars) => {
         expect(this.res.status).to.have.been.calledWith(400)
-        expect(template).to.equal('home')
+        expect(template).to.equal('login-form')
         expect(vars).to.deep.equal({ failedOneTimeLogin: true })
         done()
       })

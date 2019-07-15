@@ -151,7 +151,7 @@ describe('ReadOnly', function() {
           requestResponseForm: cb => {
             request.get(
               {
-                url: appUrl('/one-time-login/request'),
+                url: appUrl('/read-only/one-time-login/request'),
                 jar: cookieJar
               },
               (err, res) => {
@@ -172,7 +172,7 @@ describe('ReadOnly', function() {
             ({ csrfToken }, cb) => {
               request.post(
                 {
-                  url: appUrl('/one-time-login/request'),
+                  url: appUrl('/read-only/one-time-login/request'),
                   jar: cookieJar,
                   form: {
                     _csrf: csrfToken,

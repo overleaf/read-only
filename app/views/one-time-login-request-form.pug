@@ -10,7 +10,7 @@ block content
 						| Please enter your email below, and we'll send you a
 						| link that will log you into Overleaf's read only
 						| maintenance site, so you can download your projects.
-					form(action="/one-time-login/request", method="POST")
+					form(action="/read-only/one-time-login/request", method="POST")
 						+csrfToken
 						if error
 							.alert.alert-danger #{error}
