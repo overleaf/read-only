@@ -14,7 +14,7 @@ module.exports = {
         return next(err)
       }
       logger.info({ email, userId }, 'successful login')
-      req.session.user_id = userId
+      req.session.userId = userId
       res.redirect('/project')
     })
   },
@@ -44,7 +44,7 @@ module.exports = {
         return next(err)
       }
       logger.info({ email, userId }, 'successful one-time login')
-      req.session.user_id = userId
+      req.session.userId = userId
       res.redirect('/project')
     })
   },

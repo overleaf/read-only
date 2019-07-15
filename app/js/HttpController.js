@@ -6,7 +6,7 @@ const Settings = require('settings-sharelatex')
 
 module.exports = {
   home(req, res, next) {
-    if (req.session.user_id != null) {
+    if (req.session.userId != null) {
       res.redirect('/project')
     } else {
       res.render('home')
@@ -14,20 +14,9 @@ module.exports = {
   },
 
   projects(req, res, next) {
-    let userId
-    if (req.session.user_id == null) {
-      res.redirect('/')
-      return
-    }
-    try {
-      userId = ObjectId(req.session.user_id)
-    } catch (error1) {
-      const error = error1
-      return next(error)
-    }
-
-    logger.log({ userId: userId.toString() }, 'showing project page')
-    db.projects.find({ owner_ref: userId }).toArray((error, projects) => {
+    const { user } = res.locals
+    logger.log({ userId: user._id.toString() }, 'showing project page')
+    db.projects.find({ owner_ref: user._id }).toArray((error, projects) => {
       if (error != null) {
         return next(error)
       }
@@ -45,34 +34,22 @@ module.exports = {
   },
 
   getProject(req, res, next) {
-    let projectId
+    const { user } = res.locals
+    const { projectId } = req.params
     logger.log({ projectId }, 'downloading project')
-    if (req.session.user_id == null) {
-      logger.err({ projectId }, 'no user in session, not downloading project')
-      res.status(403).end()
-      return
-    }
-
-    try {
-      projectId = ObjectId(req.params.project_id)
-    } catch (error1) {
-      const error = error1
-      return next(error)
-    }
-
-    db.projects.findOne({ _id: projectId }, (error, project) => {
+    db.projects.findOne({ _id: ObjectId(projectId) }, (error, project) => {
       if (error != null) {
         return next(error)
       }
       if (project == null) {
         logger.log({ projectId }, 'project not found')
         res.status(404).end()
-      } else if (project.owner_ref.toString() !== req.session.user_id) {
+      } else if (!project.owner_ref.equals(user._id)) {
         logger.log(
           {
             projectId,
             owner_ref: project.owner_ref.toString(),
-            userId: req.session.user_id
+            user: user
           },
           'unauthorized project download'
         )

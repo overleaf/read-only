@@ -6,6 +6,7 @@ const logger = require('logger-sharelatex')
 const SmokeTest = require('smoke-test-sharelatex')
 
 const AuthController = require('./AuthController')
+const AuthorizationMiddleware = require('./AuthorizationMiddleware')
 const HttpController = require('./HttpController')
 const SessionMiddleware = require('./SessionMiddleware')
 const RateLimitMiddleware = require('./RateLimitMiddleware')
@@ -77,8 +78,16 @@ function initialize(app) {
     AuthController.handleOneTimeLoginErrors
   )
 
-  app.get('/project', HttpController.projects)
-  app.get('/project/:project_id', HttpController.getProject)
+  app.get(
+    '/project',
+    AuthorizationMiddleware.restricted,
+    HttpController.projects
+  )
+  app.get(
+    '/project/:projectId',
+    AuthorizationMiddleware.restricted,
+    HttpController.getProject
+  )
 
   app.get('/status', function(req, res) {
     logger.log('hit status')

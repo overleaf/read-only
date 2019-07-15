@@ -59,7 +59,7 @@ describe('AuthController', function() {
         .withArgs(this.email, this.password)
         .yields(null, this.userId)
       this.res.redirect.callsFake(url => {
-        expect(this.req.session.user_id).to.equal(this.userId)
+        expect(this.req.session.userId).to.equal(this.userId)
         expect(url).to.equal('/project')
         done()
       })
@@ -109,7 +109,7 @@ describe('AuthController', function() {
         .withArgs(this.email, this.token)
         .yields(null, this.userId)
       this.res.redirect.callsFake(url => {
-        expect(this.req.session.user_id).to.equal(this.userId)
+        expect(this.req.session.userId).to.equal(this.userId)
         expect(url).to.equal('/project')
         done()
       })
