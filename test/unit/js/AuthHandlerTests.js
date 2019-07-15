@@ -4,7 +4,7 @@ const path = require('path')
 const sinon = require('sinon')
 const { expect } = require('chai')
 const SandboxedModule = require('sandboxed-module')
-const { ObjectId } = require('mongojs')
+const { ObjectId } = require('mongodb')
 const Errors = require('../../../app/js/Errors')
 
 const MODULE_PATH = path.join(__dirname, '../../../app/js/AuthHandler.js')
