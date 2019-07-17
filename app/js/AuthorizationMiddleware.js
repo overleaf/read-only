@@ -1,5 +1,5 @@
 const { ObjectId } = require('mongodb')
-const { db } = require('./MongoHandler.js')
+const { db } = require('./MongoHandler')
 const { expressify } = require('./Utils')
 
 module.exports = {

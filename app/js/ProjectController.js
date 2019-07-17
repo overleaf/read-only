@@ -23,23 +23,11 @@ async function getProject(req, res, next) {
   const { user } = res.locals
   const { projectId } = req.params
   logger.log({ projectId }, 'downloading project')
-  const project = await ProjectHandler.getProject(projectId)
+  const project = await ProjectHandler.getUserProject(user, projectId)
   if (project == null) {
     logger.log({ projectId }, 'project not found')
     return res.status(404).end()
   }
-  if (!project.owner_ref.equals(user._id)) {
-    logger.log(
-      {
-        projectId,
-        owner_ref: project.owner_ref.toString(),
-        user: user
-      },
-      'unauthorized project download'
-    )
-    return res.status(403).end()
-  }
-
   const upstream = ProjectHandler.getProjectDownloadStream(project)
   upstream.pause()
   res.header('Content-Disposition', `attachment; filename=${project.name}.zip`)
