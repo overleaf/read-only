@@ -28,7 +28,9 @@ can download your projects.
 The link is valid for one hour or until the maintenance is finished.\
 `,
       ctaText: 'Access my Projects',
-      ctaUrl: `${Settings.siteUrl}/one-time-login?email=${encodeURIComponent(
+      ctaUrl: `${
+        Settings.siteUrl
+      }/read-only/one-time-login?email=${encodeURIComponent(
         email
       )}&token=${encodeURIComponent(token)}`
     }

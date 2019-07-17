@@ -6,7 +6,8 @@ const logger = require('logger-sharelatex')
 const SmokeTest = require('smoke-test-sharelatex')
 
 const AuthController = require('./AuthController')
-const HttpController = require('./HttpController')
+const AuthorizationMiddleware = require('./AuthorizationMiddleware')
+const ProjectController = require('./ProjectController')
 const SessionMiddleware = require('./SessionMiddleware')
 const RateLimitMiddleware = require('./RateLimitMiddleware')
 const CsrfMiddleware = require('./CsrfMiddleware')
@@ -22,8 +23,9 @@ function initialize(app) {
   app.use(BodyParser.urlencoded({ extended: false }))
   app.use(CsrfMiddleware.middleware)
 
-  app.get('/', HttpController.home)
+  app.get('/', ProjectController.home)
 
+  app.get('/login', AuthController.loginForm)
   app.post(
     '/login',
     ValidationMiddleware.validate({
@@ -43,10 +45,13 @@ function initialize(app) {
   )
 
   app.get('/logout', AuthController.logout)
-  app.get('/one-time-login/request', AuthController.oneTimeLoginRequestForm)
+  app.get(
+    '/read-only/one-time-login/request',
+    AuthController.oneTimeLoginRequestForm
+  )
 
   app.post(
-    '/one-time-login/request',
+    '/read-only/one-time-login/request',
     ValidationMiddleware.validate({
       body: Joi.object({
         email: Joi.string()
@@ -61,7 +66,7 @@ function initialize(app) {
   )
 
   app.get(
-    '/one-time-login',
+    '/read-only/one-time-login',
     ValidationMiddleware.validate({
       query: Joi.object({
         email: Joi.string()
@@ -77,8 +82,16 @@ function initialize(app) {
     AuthController.handleOneTimeLoginErrors
   )
 
-  app.get('/project', HttpController.projects)
-  app.get('/project/:project_id', HttpController.getProject)
+  app.get(
+    '/project',
+    AuthorizationMiddleware.restricted,
+    ProjectController.projects
+  )
+  app.get(
+    '/project/:projectId',
+    AuthorizationMiddleware.restricted,
+    ProjectController.getProject
+  )
 
   app.get('/status', function(req, res) {
     logger.log('hit status')

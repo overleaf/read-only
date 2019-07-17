@@ -59,7 +59,7 @@ describe('AuthController', function() {
         .withArgs(this.email, this.password)
         .yields(null, this.userId)
       this.res.redirect.callsFake(url => {
-        expect(this.req.session.user_id).to.equal(this.userId)
+        expect(this.req.session.userId).to.equal(this.userId)
         expect(url).to.equal('/project')
         done()
       })
@@ -72,7 +72,7 @@ describe('AuthController', function() {
     it('rerenders the login screen on authentication failure', function(done) {
       this.res.render.callsFake((template, vars) => {
         expect(this.res.status).to.have.been.calledWith(400)
-        expect(template).to.equal('home')
+        expect(template).to.equal('login-form')
         expect(vars).to.deep.equal({ failedLogin: true })
         done()
       })
@@ -109,7 +109,7 @@ describe('AuthController', function() {
         .withArgs(this.email, this.token)
         .yields(null, this.userId)
       this.res.redirect.callsFake(url => {
-        expect(this.req.session.user_id).to.equal(this.userId)
+        expect(this.req.session.userId).to.equal(this.userId)
         expect(url).to.equal('/project')
         done()
       })
@@ -122,7 +122,7 @@ describe('AuthController', function() {
     it('rerenders the login screen on authentication failure', function(done) {
       this.res.render.callsFake((template, vars) => {
         expect(this.res.status).to.have.been.calledWith(400)
-        expect(template).to.equal('home')
+        expect(template).to.equal('login-form')
         expect(vars).to.deep.equal({ failedOneTimeLogin: true })
         done()
       })
