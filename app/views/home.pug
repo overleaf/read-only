@@ -7,6 +7,7 @@ block content
 			.col-md-6.col-md-offset-3
 				.card
 					form(action="/login", method="POST")
+						+csrfToken
 						if failedLogin
 							.alert.alert-danger Your email or password was incorrect
 						if failedOneTimeLogin

@@ -1,6 +1,6 @@
 const path = require('path')
 const BodyParser = require('body-parser')
-const { celebrate, Joi } = require('celebrate')
+const { Joi } = require('celebrate')
 const express = require('express')
 const logger = require('logger-sharelatex')
 const SmokeTest = require('smoke-test-sharelatex')
@@ -9,6 +9,8 @@ const AuthController = require('./AuthController')
 const HttpController = require('./HttpController')
 const SessionMiddleware = require('./SessionMiddleware')
 const RateLimitMiddleware = require('./RateLimitMiddleware')
+const CsrfMiddleware = require('./CsrfMiddleware')
+const ValidationMiddleware = require('./ValidationMiddleware')
 
 module.exports = {
   initialize
@@ -18,12 +20,13 @@ function initialize(app) {
   app.use(express.static('public'))
   app.use(SessionMiddleware.middleware)
   app.use(BodyParser.urlencoded({ extended: false }))
+  app.use(CsrfMiddleware.middleware)
 
   app.get('/', HttpController.home)
 
   app.post(
     '/login',
-    celebrate({
+    ValidationMiddleware.validate({
       body: Joi.object({
         email: Joi.string()
           .trim()
@@ -44,7 +47,7 @@ function initialize(app) {
 
   app.post(
     '/one-time-login/request',
-    celebrate({
+    ValidationMiddleware.validate({
       body: Joi.object({
         email: Joi.string()
           .trim()
@@ -59,7 +62,7 @@ function initialize(app) {
 
   app.get(
     '/one-time-login',
-    celebrate({
+    ValidationMiddleware.validate({
       query: Joi.object({
         email: Joi.string()
           .email()
