@@ -3,13 +3,8 @@ const ProjectHandler = require('./ProjectHandler')
 const { expressify } = require('./Utils')
 
 module.exports = {
-  home,
   projects: expressify(projects),
   getProject: expressify(getProject)
-}
-
-function home(req, res, next) {
-  res.redirect('/project')
 }
 
 async function projects(req, res, next) {
