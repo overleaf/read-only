@@ -3,11 +3,15 @@ const { MongoClient } = require('mongodb')
 const Settings = require('settings-sharelatex')
 const logger = require('logger-sharelatex')
 
-// Global collections object
+// Native DB object
+let nativeDb
+
+// Exported DB object whose properties are the individual collections
 const db = {}
 
 module.exports = {
   db,
+  isHealthy,
   initialize: callbackify(initialize),
   promises: {
     initialize
@@ -20,13 +24,28 @@ async function initialize() {
   await _createIndexes()
 }
 
+async function isHealthy() {
+  if (nativeDb == null) {
+    return false
+  }
+  try {
+    await nativeDb.admin().ping()
+  } catch (err) {
+    logger.log({ err }, 'MongoDB did not respond to ping')
+    return false
+  }
+  return true
+}
+
 async function _connect() {
-  const client = new MongoClient(Settings.mongo.url, { useNewUrlParser: true })
-  const connection = await client.connect()
-  const _db = connection.db(Settings.mongo.db)
-  db.users = _db.collection('users')
-  db.projects = _db.collection('projects')
-  db.oneTimeLoginTokens = _db.collection('oneTimeLoginTokens')
+  const client = new MongoClient(Settings.mongo.url, {
+    useNewUrlParser: true
+  })
+  await client.connect()
+  nativeDb = client.db(Settings.mongo.db)
+  db.users = nativeDb.collection('users')
+  db.projects = nativeDb.collection('projects')
+  db.oneTimeLoginTokens = nativeDb.collection('oneTimeLoginTokens')
 }
 
 async function _createIndexes() {

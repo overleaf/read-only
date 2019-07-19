@@ -1,12 +1,10 @@
-const path = require('path')
 const BodyParser = require('body-parser')
 const { Joi } = require('celebrate')
 const express = require('express')
-const logger = require('logger-sharelatex')
-const SmokeTest = require('smoke-test-sharelatex')
 
 const AuthController = require('./AuthController')
 const AuthorizationMiddleware = require('./AuthorizationMiddleware')
+const HealthCheckController = require('./HealthCheckController')
 const ProjectController = require('./ProjectController')
 const SessionMiddleware = require('./SessionMiddleware')
 const RateLimitMiddleware = require('./RateLimitMiddleware')
@@ -93,13 +91,6 @@ function initialize(app) {
     ProjectController.getProject
   )
 
-  app.get('/status', function(req, res) {
-    logger.log('hit status')
-    res.send('read-only is alive')
-  })
-
-  app.get(
-    '/health_check',
-    SmokeTest.run(path.join(__dirname, '../../test/smoke/js/test.js'), 30000)
-  )
+  app.get('/status', HealthCheckController.status)
+  app.get('/health_check', HealthCheckController.healthCheck)
 }
