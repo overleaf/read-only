@@ -21,8 +21,6 @@ function initialize(app) {
   app.use(BodyParser.urlencoded({ extended: false }))
   app.use(CsrfMiddleware.middleware)
 
-  app.get('/', ProjectController.home)
-
   app.get('/login', AuthController.loginForm)
   app.post(
     '/login',
@@ -93,4 +91,9 @@ function initialize(app) {
 
   app.get('/status', HealthCheckController.status)
   app.get('/health_check', HealthCheckController.healthCheck)
+
+  // Catch-all route. Keep this at the bottom of the file
+  app.use((req, res) => {
+    res.redirect('/project')
+  })
 }
