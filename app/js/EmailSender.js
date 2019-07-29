@@ -1,18 +1,5 @@
-/* eslint-disable
-    no-return-assign,
-    no-undef,
-    no-unused-vars,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 const nodemailer = require('nodemailer')
-const sengridTransport = require('nodemailer-sendgrid-transport')
+const sendgridTransport = require('nodemailer-sendgrid-transport')
 const Settings = require('settings-sharelatex')
 const logger = require('logger-sharelatex')
 
@@ -23,17 +10,20 @@ module.exports = {
     switch (Settings.email.transport) {
       case 'sendgrid':
         logger.info('Configuring sendgrid mail transport')
-        return (mailer = nodemailer.createTransport(
+        mailer = nodemailer.createTransport(
           sendgridTransport(Settings.email.parameters)
-        ))
+        )
+        break
       case 'smtp':
         logger.info(
           { host: Settings.email.parameters.host },
           'Configuring SMTP mail transport'
         )
-        return (mailer = nodemailer.createTransport(Settings.email.parameters))
+        mailer = nodemailer.createTransport(Settings.email.parameters)
+        break
       default:
-        return logger.info('No mail transport configured')
+        logger.info('No mail transport configured')
+        break
     }
   },
 
@@ -45,6 +35,6 @@ module.exports = {
       )
       return callback()
     }
-    return mailer.sendMail(options, callback)
+    mailer.sendMail(options, callback)
   }
 }
