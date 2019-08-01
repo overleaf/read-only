@@ -91,6 +91,8 @@ function initialize(app) {
 
   app.get('/status', HealthCheckController.status)
   app.get('/health_check', HealthCheckController.healthCheck)
+  app.get('/dev/info', res.json(req.headers))
+
 
   // Catch-all route. Keep this at the bottom of the file
   app.use((req, res) => {
