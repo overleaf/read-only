@@ -33,12 +33,14 @@ switch (process.env['EMAIL_TRANSPORT']) {
     emailTransportParams = {}
 }
 
+let trustedProxyIps
+try {
+  trustedProxyIps = JSON.parse(process.env['TRUSTED_PROXY_IPS'])
+} catch (error) {}
+
 module.exports = {
   behindProxy: yn(process.env['BEHIND_PROXY'], { default: false }),
-  trustedProxyIps: yn(JSON.parse(process.env['TRUSTED_PROXY_IPS']), {
-    default: undefined
-  }),
-
+  trustedProxyIps: trustedProxyIps,
   cookieDomain: process.env['COOKIE_DOMAIN'],
   cookieName: 'overleaf_read_only.sid',
   secureCookie: yn(process.env['SECURE_COOKIE'], { default: false }),

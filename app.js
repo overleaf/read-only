@@ -4,7 +4,7 @@ const logger = require('logger-sharelatex')
 const express = require('express')
 const Metrics = require('metrics-sharelatex')
 const Path = require('path')
-const lodash = require('lodash')
+const _ = require('lodash')
 
 const EmailSender = require('./app/js/EmailSender')
 const MongoHandler = require('./app/js/MongoHandler')
@@ -29,20 +29,23 @@ function startApp(host, port, callback) {
   app.set('views', Path.join(__dirname, 'app/views'))
   app.set('view engine', 'pug')
 
-  if (
-    Settings.behindProxy &&
-    Settings.trustedProxyIps &&
-    req.headers['x-original-forwarded-for']
-  ) {
-    app.use(function(req, res) {
-      re.headers['x-forwarded-for'] = req.headers['x-original-forwarded-for']
+  app.use(function(req, _res, next) {
+    if (
+      Settings.behindProxy &&
+      Settings.trustedProxyIps &&
+      req.headers['x-original-forwarded-for']
+    ) {
+      req.headers['x-forwarded-for'] = req.headers['x-original-forwarded-for']
       app.set('trust proxy', function(ip) {
         console.log(ip)
         console.log(Settings.trustedProxyIps)
         return _.includes(Settings.trustedProxyIps, ip)
       })
-    })
-  }
+    } else {
+      app.set('trust proxy', Settings.behindProxy)
+    }
+    next()
+  })
 
   Router.initialize(app)
   Metrics.initialize('read-only')
