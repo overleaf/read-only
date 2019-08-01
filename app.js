@@ -30,6 +30,14 @@ function startApp(host, port, callback) {
   app.set('view engine', 'pug')
 
   app.use(function(req, _res, next) {
+    console.log(
+      Settings.behindProxy,
+      Settings.trustedProxyIps,
+      req.headers['x-original-forwarded-for']
+    )
+    console.log(req.headers)
+    console.log(req.headers['x-original-forwarded-for'])
+    console.log(req.headers['x-original-forwarded-for'] !== undefined)
     if (
       Settings.behindProxy &&
       Settings.trustedProxyIps &&
@@ -42,6 +50,7 @@ function startApp(host, port, callback) {
         return _.includes(Settings.trustedProxyIps, ip)
       })
     } else {
+      console.log('else, behind proxy')
       app.set('trust proxy', Settings.behindProxy)
     }
     next()
