@@ -27,7 +27,11 @@ function startApp(host, port, callback) {
   const app = express()
   app.set('views', Path.join(__dirname, 'app/views'))
   app.set('view engine', 'pug')
-  app.set('trust proxy', Settings.behindProxy)
+  if (Settings.behindProxy) {
+    app.set('trust proxy', Settings.trustedProxyIps || false)
+    app.use(fixForwardedForHeaders)
+  }
+
   Router.initialize(app)
   Metrics.initialize('read-only')
   logger.initialize('read-only')
@@ -45,4 +49,24 @@ function startApp(host, port, callback) {
     },
     callback
   )
+}
+
+/**
+ * Handle the X-Original-Forwarded-For header.
+ *
+ * The nginx ingress sends us the contents of X-Forwarded-For it received in
+ * X-Original-Forwarded-For. Express expects all proxy IPs to be in a comma
+ * separated list in X-Forwarded-For.
+ */
+function fixForwardedForHeaders(req, res, next) {
+  if (
+    req.headers['x-original-forwarded-for'] &&
+    req.headers['x-forwarded-for']
+  ) {
+    req.headers['x-forwarded-for'] =
+      req.headers['x-original-forwarded-for'] +
+      ', ' +
+      req.headers['x-forwarded-for']
+  }
+  next()
 }
