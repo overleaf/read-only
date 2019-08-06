@@ -89,6 +89,11 @@ function initialize(app) {
     ProjectController.getProject
   )
 
+  app.get('/dev/info', function(req, res) {
+    req.headers.ip = req.ip
+    res.json(req.headers)
+  })
+
   app.get('/status', HealthCheckController.status)
   app.get('/health_check', HealthCheckController.healthCheck)
 
