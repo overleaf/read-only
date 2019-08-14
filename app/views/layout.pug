@@ -9,6 +9,11 @@ html
 body.content-alt
 	.container(style="margin-top: 12px")
 		.row
-				.col-md-10.col-md-offset-1
-						.card Overleaf is in read only mode while we perform planned maintenance.
+				.col-md-10.col-md-offset-1.text-center
+						p.card Overleaf is in read only mode while we perform maintenance. Please check our #[a(href=settings.statusPageUrl) status page] for updates.
 	block content
+	.container(style="margin-top: 3em;")
+		.row
+				.col-md-6.col-md-offset-3.text-center
+					p
+						small You can access the latest available backups of your projects here while Overleaf is down for maintenance. Please note that the data here may be several hours old; the latest changes to your projects and accounts will be accessible once maintenance is complete.

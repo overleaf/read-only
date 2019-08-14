@@ -75,5 +75,7 @@ module.exports = {
     email: process.env['SMOKE_TEST_EMAIL'],
     password: process.env['SMOKE_TEST_PASSWORD'],
     projectId: process.env['SMOKE_TEST_PROJECT_ID']
-  }
+  },
+
+  statusPageUrl: process.env['STATUS_PAGE_URL'] || 'http://status.overleaf.com'
 }
