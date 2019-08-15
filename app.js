@@ -32,6 +32,10 @@ function startApp(host, port, callback) {
     app.use(fixForwardedForHeaders)
   }
 
+  app.locals.settings = {
+    statusPageUrl: Settings.statusPageUrl
+  }
+
   Router.initialize(app)
   Metrics.initialize('read-only')
   logger.initialize('read-only')
