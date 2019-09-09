@@ -36,6 +36,8 @@ function startApp(host, port, callback) {
     statusPageUrl: Settings.statusPageUrl
   }
 
+  Metrics.injectMetricsRoute(app)
+
   Router.initialize(app)
   Metrics.initialize('read-only')
   logger.initialize('read-only')
