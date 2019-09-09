@@ -41,6 +41,8 @@ function startApp(host, port, callback) {
   logger.initialize('read-only')
   EmailSender.initialize()
 
+  Metrics.injectMetricsRoute(app)
+
   async.series(
     {
       initDb(cb) {
