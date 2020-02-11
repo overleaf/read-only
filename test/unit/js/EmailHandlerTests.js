@@ -28,8 +28,8 @@ describe('EmailHandler', function() {
     })
   })
 
-  describe('sendOneTimeLoginEmail', () =>
-    it('builds and sends an email', function(done) {
+  describe('sendOneTimeLoginEmail', function() {
+    return it('builds and sends an email', function(done) {
       const email = 'user@example.com'
       const token = 'secret123'
       this.EmailHandler.sendOneTimeLoginEmail(email, token, err => {
@@ -46,5 +46,6 @@ describe('EmailHandler', function() {
         })
         done()
       })
-    }))
+    })
+  })
 })

@@ -25,7 +25,9 @@ describe('ReadOnly', function() {
     expect(projects).to.have.members(expectedProjects)
   }
 
-  before('Ensure Mongo is running', done => MongoDb.ensureRunning(done))
+  before('Ensure Mongo is running', function(done) {
+    return MongoDb.ensureRunning(done)
+  })
 
   before('Prepare dummy data', function(done) {
     async.mapValuesSeries(
@@ -59,15 +61,17 @@ describe('ReadOnly', function() {
     )
   })
 
-  before('Ensure read-only is running', done => ReadOnlyApp.ensureRunning(done))
+  before('Ensure read-only is running', function(done) {
+    return ReadOnlyApp.ensureRunning(done)
+  })
 
-  before('Ensure mock email server is running', done =>
-    MockEmailServer.ensureRunning(done)
-  )
+  before('Ensure mock email server is running', function(done) {
+    return MockEmailServer.ensureRunning(done)
+  })
 
-  describe('home page', () =>
-    it('displays a login page', done =>
-      request.get(appUrl('/'), (err, res) => {
+  describe('home page', function() {
+    return it('displays a login page', function(done) {
+      return request.get(appUrl('/'), (err, res) => {
         if (err != null) {
           return done(err)
         }
@@ -76,10 +80,12 @@ describe('ReadOnly', function() {
         const loginForm = doc.querySelector('form[action="/login"]')
         expect(loginForm).to.exist
         done()
-      })))
+      })
+    })
+  })
 
-  describe('password login', () =>
-    it("logs the user in and shows the user's projects", function(done) {
+  describe('password login', function() {
+    return it("logs the user in and shows the user's projects", function(done) {
       const user = this.users.twoProjects
       const cookieJar = request.jar()
       async.auto(
@@ -137,10 +143,11 @@ describe('ReadOnly', function() {
           done()
         }
       )
-    }))
+    })
+  })
 
-  describe('one-time login', () =>
-    it('sends an email with a one-time login link', function(done) {
+  describe('one-time login', function() {
+    return it('sends an email with a one-time login link', function(done) {
       const user = this.users.oneProject
       const cookieJar = request.jar()
       async.auto(
@@ -219,5 +226,6 @@ describe('ReadOnly', function() {
           done()
         }
       )
-    }))
+    })
+  })
 })

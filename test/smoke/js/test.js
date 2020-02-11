@@ -14,7 +14,7 @@ const buildUrl = path =>
 // Change cookie to be non secure so curl will send it
 const convertCookieFile = function(callback) {
   fs = require('fs')
-  fs.readFile(cookieFilePath, 'utf8', function(err, data) {
+  fs.readFile(cookieFilePath, 'utf8', (err, data) => {
     if (err != null) {
       return callback(err)
     }
@@ -22,7 +22,7 @@ const convertCookieFile = function(callback) {
     const secondTrue = data.indexOf('TRUE', firstTrue + 4)
     const result =
       data.slice(0, secondTrue) + 'FALSE' + data.slice(secondTrue + 4)
-    fs.writeFile(cookieFilePath, result, 'utf8', function(err) {
+    fs.writeFile(cookieFilePath, result, 'utf8', err => {
       if (err != null) {
         return callback(err)
       }
@@ -31,8 +31,8 @@ const convertCookieFile = function(callback) {
   })
 }
 
-describe('Log in and download project', () =>
-  it('should log in and download a project', function(done) {
+describe('Log in and download project', function() {
+  return it('should log in and download a project', function(done) {
     const testId = Math.floor(Math.random() * 100000).toString(16)
     const start = new Date()
     logger.log({ testId }, 'tests: starting smoke test')
@@ -44,7 +44,7 @@ curl -H "X-Forwarded-Proto: https" -c ${cookieFilePath} --data "email=${encodeUR
     )}\
 `
     logger.log({ command, testId }, 'running login curl')
-    child.exec(command, function(err, stdout, stderr) {
+    child.exec(command, (err, stdout, stderr) => {
       if (err != null) {
         return done(err)
       }
@@ -61,12 +61,12 @@ curl -H "X-Forwarded-Proto: https" ${buildUrl(
       )} > /tmp/${Settings.smokeTest.projectId}.zip\
 `
       logger.log({ command, testId }, 'tests: running download curl')
-      convertCookieFile(function(error) {
+      convertCookieFile(error => {
         if (error != null) {
           logger.err({ error }, 'tests: error convreing cookiefile')
           return done(error)
         }
-        child.exec(command, function(error, stdout, stderr) {
+        child.exec(command, (error, stdout, stderr) => {
           if (err != null) {
             logger.err({ err: error, stderr }, 'tests: error execing command')
             return done(err)
@@ -78,7 +78,7 @@ curl -H "X-Forwarded-Proto: https" ${buildUrl(
           command = `\
 unzip /tmp/${Settings.smokeTest.projectId}.zip -d /tmp/${Settings.smokeTest.projectId}\
 `
-          child.exec(command, function(err, stdout, stderr) {
+          child.exec(command, (err, stdout, stderr) => {
             if (err != null) {
               logger.err({ err }, 'tests: error trying to unzip')
               return done(err)
@@ -101,4 +101,5 @@ unzip /tmp/${Settings.smokeTest.projectId}.zip -d /tmp/${Settings.smokeTest.proj
         })
       })
     })
-  }))
+  })
+})

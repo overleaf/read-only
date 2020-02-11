@@ -68,8 +68,8 @@ describe('AuthController', function() {
     })
   })
 
-  describe('handleLoginErrors', () =>
-    it('rerenders the login screen on authentication failure', function(done) {
+  describe('handleLoginErrors', function() {
+    return it('rerenders the login screen on authentication failure', function(done) {
       this.res.render.callsFake((template, vars) => {
         expect(this.res.status).to.have.been.calledWith(400)
         expect(template).to.equal('login-form')
@@ -83,10 +83,11 @@ describe('AuthController', function() {
         this.res,
         this.next
       )
-    }))
+    })
+  })
 
-  describe('logout', () =>
-    it('clears the session and redirects to the login page', function(done) {
+  describe('logout', function() {
+    return it('clears the session and redirects to the login page', function(done) {
       this.res.redirect.callsFake(url => {
         expect(url).to.equal('/')
         expect(this.req.session.destroy).to.have.been.called
@@ -94,7 +95,8 @@ describe('AuthController', function() {
       })
 
       this.AuthController.logout(this.req, this.res, this.next)
-    }))
+    })
+  })
 
   describe('oneTimeLogin', function() {
     beforeEach(function() {
@@ -118,8 +120,8 @@ describe('AuthController', function() {
     })
   })
 
-  describe('handleOneTimeLoginErrors', () =>
-    it('rerenders the login screen on authentication failure', function(done) {
+  describe('handleOneTimeLoginErrors', function() {
+    return it('rerenders the login screen on authentication failure', function(done) {
       this.res.render.callsFake((template, vars) => {
         expect(this.res.status).to.have.been.calledWith(400)
         expect(template).to.equal('login-form')
@@ -133,7 +135,8 @@ describe('AuthController', function() {
         this.res,
         this.next
       )
-    }))
+    })
+  })
 
   describe('oneTimeLoginRequest', function() {
     it('sends an email with a one-time login token', function(done) {
