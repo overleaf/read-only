@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "async": "^3.2.0",
-    "bcrypt": "^3.0.6",
+    "bcrypt": "^4.0.1",
     "body-parser": "^1.19.0",
     "celebrate": "^10.0.1",
     "coffeescript": "^1.12.7",
@@ -36,7 +36,7 @@
     "request": "^2.88.2",
     "request-promise-native": "^1.0.8",
     "settings-sharelatex": "^1.1.0",
-    "yn": "^3.1.0"
+    "yn": "^4.0.0"
   },
   "devDependencies": {
     "bunyan": "~0.22.3",
@@ -55,7 +55,7 @@
     "jsdom": "^15.1.1",
     "maildev": "^1.1.0",
     "mocha": "^6.1.4",
-    "nodemon": "^1.19.1",
+    "nodemon": "^2.0.2",
     "prettier-eslint-cli": "^5.0.0",
     "sandboxed-module": "^2.0.3",
     "sinon": "^7.3.2",
