@@ -25,7 +25,7 @@
     "express-rate-limit": "^5.1.1",
     "express-session": "^1.17.0",
     "lodash": "^4.17.15",
-    "logger-sharelatex": "^1.9.0",
+    "logger-sharelatex": "^1.9.1",
     "marked": "^0.8.0",
     "metrics-sharelatex": "^2.5.0",
     "mongodb": "^3.5.4",
