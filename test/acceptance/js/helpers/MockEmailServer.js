@@ -51,7 +51,7 @@ module.exports = {
   },
 
   handleNewEmail(email) {
-    for (let callback of Array.from(this.emailCallbacks)) {
+    for (const callback of Array.from(this.emailCallbacks)) {
       callback(null, email)
     }
     return (this.emailCallbacks = [])

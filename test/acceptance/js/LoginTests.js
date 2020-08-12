@@ -123,7 +123,7 @@ describe('ReadOnly', function() {
                     password: user.password
                   },
                   followRedirect: res => {
-                    return res.headers['location'] === '/project'
+                    return res.headers.location === '/project'
                   },
                   followAllRedirects: true
                 },
